@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ATS Resume Agent for Pharmacy Students</title>
+<style id="pageStyle">@page{size:A4;margin:0}</style>
+<style>
+:root{
+  --bg:#f4f6fb;--card:#fff;--ink:#18202f;--mut:#5b6678;--line:#dfe4ee;--pri:#2f5bea;--pri2:#1f43bb;
+  --ok:#15803d;--okbg:#e4f6ea;--warn:#a16207;--warnbg:#fdf3d7;--bad:#b91c1c;--badbg:#fde4e4;--chip:#eef1f8;
+  --pw:210mm;--ph:1122px;--rf:Calibri,Carlito,'Segoe UI',Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0f1420;--card:#171e2d;--ink:#e8ecf5;--mut:#9aa6bd;--line:#2a3448;--pri:#6f8cff;--pri2:#8aa0ff;
+  --okbg:#12301f;--warnbg:#3a2f10;--badbg:#3b1717;--chip:#202a3d;--ok:#6ee7a0;--warn:#f5cf6b;--bad:#fca5a5}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}
+header.top{background:linear-gradient(120deg,#1f43bb,#2f5bea 55%,#14a38b);color:#fff;padding:22px 20px}
+.wrap{max-width:1500px;margin:0 auto;padding:0 16px}
+header.top h1{margin:0 0 4px;font-size:24px;letter-spacing:.2px}
+header.top p{margin:0;opacity:.92;max-width:900px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+button,.btn{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:9px}
+button:hover{border-color:var(--pri)}
+button.pri{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:600}
+button.pri:hover{background:var(--pri2)}
+header.top button{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.35)}
+header.top button:hover{background:rgba(255,255,255,.26)}
+button.sm{padding:4px 10px;font-size:13px;border-radius:7px}
+button.danger{color:var(--bad)}
+main{display:grid;grid-template-columns:minmax(340px,480px) 1fr;gap:18px;padding:18px 0 40px;align-items:start}
+@media (max-width:1000px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h2{font-size:16px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.card h2 .n{background:var(--pri);color:#fff;border-radius:50%;width:24px;height:24px;font-size:13px;display:inline-flex;align-items:center;justify-content:center}
+label{display:block;font-size:12.5px;color:var(--mut);margin:8px 0 3px;font-weight:600}
+input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:7px 9px}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--pri);outline-offset:0;border-color:var(--pri)}
+textarea{resize:vertical;min-height:70px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px}
+@media (max-width:560px){.g2,.g3{grid-template-columns:1fr}}
+.entry{border:1px dashed var(--line);border-radius:10px;padding:10px;margin:10px 0;background:color-mix(in srgb,var(--bg) 60%,transparent)}
+.entry .hd{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--mut);font-weight:700}
+.hint{font-size:12.5px;color:var(--mut);margin:4px 0}
+details.how{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:14px}
+details.how summary{cursor:pointer;font-weight:700}
+details.how ol{margin:8px 0 0 18px;padding:0}
+.runrow{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding:14px 0 4px;z-index:5}
+.runrow button{width:100%;padding:13px;font-size:16px}
+/* output */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
+.tabs button{border:none;border-bottom:3px solid transparent;border-radius:0;background:none;padding:9px 14px;font-weight:600;color:var(--mut)}
+.tabs button.on{color:var(--pri);border-bottom-color:var(--pri)}
+.pane{display:none}.pane.on{display:block}
+.stages{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.stages li{display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid var(--line);border-radius:9px;font-size:14px}
+.stages li .ic{width:22px;height:22px;border-radius:50%;background:var(--chip);display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex:none}
+.stages li.act .ic{background:var(--pri);color:#fff}
+.stages li.done .ic{background:var(--ok);color:#fff}
+.stages li.fail .ic{background:var(--bad);color:#fff}
+.stages li small{color:var(--mut);margin-left:auto;text-align:right}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--card)}
+.stat b{display:block;font-size:26px;line-height:1.1}
+.stat span{font-size:12.5px;color:var(--mut)}
+.stat.ok b{color:var(--ok)}.stat.warn b{color:var(--warn)}.stat.bad b{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:13px;background:var(--chip);border:1px solid var(--line)}
+.chip.ok{background:var(--okbg);color:var(--ok);border-color:transparent}
+.chip.warn{background:var(--warnbg);color:var(--warn);border-color:transparent}
+.chip.bad{background:var(--badbg);color:var(--bad);border-color:transparent}
+.chip input{width:auto;margin:0}
+.chip small{opacity:.75}
+ul.plain{margin:6px 0 0 18px;padding:0}
+ul.plain li{margin:3px 0}
+.chk{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.chk li{display:flex;gap:10px;padding:8px 10px;border-radius:9px;border:1px solid var(--line);font-size:14px}
+.chk li .t{flex:none;font-weight:800;width:20px;text-align:center}
+.chk li.pass{background:var(--okbg)}.chk li.pass .t{color:var(--ok)}
+.chk li.warn{background:var(--warnbg)}.chk li.warn .t{color:var(--warn)}
+.chk li.fail{background:var(--badbg)}.chk li.fail .t{color:var(--bad)}
+.chk li small{display:block;color:var(--mut)}
+.diff{font-size:13.5px;border-left:3px solid var(--line);padding:2px 10px;margin:6px 0}
+.diff s{color:var(--bad)}.diff u{color:var(--ok);text-decoration:none;font-weight:600}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.toolbar .sp{flex:1}
+.preview-wrap{background:#8d97ab22;border:1px solid var(--line);border-radius:12px;padding:14px;overflow:auto}
+#scaler{transform-origin:top left}
+.empty{color:var(--mut);padding:30px 10px;text-align:center}
+.note{font-size:12.5px;color:var(--mut)}
+footer{color:var(--mut);font-size:13px;padding:0 0 30px}
+footer.brand{text-align:center;border-top:1px solid var(--line);padding:18px 0 34px;margin-top:8px;line-height:1.7}
+footer.brand b{color:var(--ink)}
+footer a{color:var(--pri)}
+/* ---------- resume page (ATS-safe: single column, no tables/images) ---------- */
+.page{width:var(--pw);min-height:var(--ph);background:#fff;color:#000;padding:14mm 15mm;font-family:var(--rf);font-size:10pt;line-height:1.3;box-shadow:0 4px 24px #0003;outline:none}
+.page [data-t=name]{font-size:18pt;font-weight:700;text-align:center;line-height:1.15}
+.page [data-t=contact]{text-align:center;font-size:9.5pt;margin-bottom:2px}
+.page [data-t=sec]{font-weight:700;font-size:10.5pt;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #000;margin:9px 0 4px;padding-bottom:1px}
+.page [data-t=row]{display:flex;justify-content:space-between;gap:12px;margin-top:4px}
+.page [data-t=row] .r{white-space:nowrap}
+.page [data-t=row] .n{font-weight:400}
+.page [data-t=sub]{font-style:italic}
+.page [data-t=p]{margin:2px 0}
+.page ul{margin:2px 0 0 0;padding-left:17px}
+.page li{margin:1px 0}
+#measure{position:absolute;left:-99999px;top:0;visibility:hidden}
+#printRoot{display:none}
+body.printing>*:not(#printRoot){display:none!important}
+body.printing #printRoot{display:block}
+body.printing .page{min-height:0;box-shadow:none}
+body.printing{background:#fff}
+
+.tplgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;margin:8px 0 6px}
+.tplb{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;font-size:12px;line-height:1.25;text-align:center}
+.tplb svg{border-radius:3px;box-shadow:0 1px 4px #0002}
+.tplb.on{border:2px solid var(--pri);background:color-mix(in srgb,var(--pri) 10%,var(--card))}
+.tplb em{font-style:normal;font-size:11px;padding:1px 7px;border-radius:99px;background:var(--okbg);color:var(--ok)}
+.tplb em.d{background:var(--warnbg);color:var(--warn)}
+.page{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page.designed{padding:0;font-size:9.5pt;line-height:1.3}
+.page.designed .cols{display:flex;min-height:var(--ph);align-items:stretch}
+.page.designed .side{width:var(--sw);flex:none;padding:22px 16px;background:var(--sbg);color:var(--sfg)}
+.page.designed .main{flex:1;min-width:0;padding:24px 22px}
+.page.designed .main1{padding:4px 15mm 14mm}
+.page.designed .hdr{display:flex;gap:14px;align-items:flex-start}
+.page.designed .hdr .c{flex:1;min-width:0}
+.page.designed .hdr .c.p{flex:none;width:90px}
+.page.designed .hdr .c.r{text-align:right;flex:none;max-width:34%}
+.page.designed [data-t=name]{font-size:22pt;font-weight:700;line-height:1.1;text-align:left;color:var(--ac);text-transform:uppercase;letter-spacing:.02em}
+.page.designed [data-t=head]{font-size:10.5pt;color:#555;margin:3px 0 8px}
+.page.designed [data-t=contact]{text-align:left;font-size:9pt;margin:6px 0 0}
+.page.designed [data-t=cl]{font-size:9pt;margin:2px 0;word-break:break-word}
+.page.designed .main [data-t=sec],.page.designed .main1 [data-t=sec]{color:var(--ac);border-bottom:1.5px solid var(--ac);font-size:10pt;margin:11px 0 4px}
+.page.designed .side [data-t=sec]{color:var(--sfg);border-bottom:1px solid rgba(128,128,128,.55);font-size:9.5pt;margin:12px 0 5px}
+.page.designed [data-t=photo]{display:block;object-fit:cover;border-radius:6px;width:96px;height:96px}
+.page.designed .side [data-t=photo]{width:118px;height:118px;margin:0 auto 12px}
+.page.designed .hdr .c.p [data-t=photo]{margin-left:auto}
+.page.designed [data-t=skill]{display:flex;justify-content:space-between;align-items:center;gap:6px;margin:2.5px 0;font-size:9pt}
+.page.designed .lv{letter-spacing:1px;font-size:8px;white-space:nowrap}
+.page.designed .lv.bar{display:inline-block;width:48px;height:5px;background:rgba(128,128,128,.35);border-radius:3px;flex:none}
+.page.designed .lv.bar i{display:block;height:100%;background:var(--ac);border-radius:3px}
+.page.designed.tpl-navy .lv.bar i{background:#fff}
+.page.designed .side ul{padding-left:15px}
+.page.designed.tpl-banner .hdr{background:var(--ac);padding:16px 24px;height:84px;box-sizing:border-box}
+.page.designed.tpl-banner [data-t=name]{color:#fff}
+.page.designed.tpl-banner [data-t=head]{color:#e6ebf5}
+.page.designed.tpl-banner .cols{min-height:calc(var(--ph) - 84px)}
+.page.designed.tpl-nameblue .hdr{padding:22px 22px 4px;align-items:flex-end}
+.page.designed.tpl-nameblue [data-t=name]{font-size:26pt}
+.page.designed.tpl-nameblue .cols{min-height:calc(var(--ph) - 96px)}
+.page.designed.tpl-clean .hdr,.page.designed.tpl-center .hdr{padding:12mm 15mm 0}
+.page.designed.tpl-center .hdr .c.ctr{text-align:center}
+.page.designed.tpl-center [data-t=name],.page.designed.tpl-center [data-t=head],.page.designed.tpl-center [data-t=contact]{text-align:center}
+.page.designed.tpl-center [data-t=sec]{text-align:center}
+.page.designed.tpl-center .hdr .c.p{width:90px}
+body.printing .page.designed .cols{min-height:calc(var(--ph) - 3px)}
+
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <h1>ATS Resume Agent <span style="font-weight:400;opacity:.85">for Pharmacy Students</span></h1>
+  <p>Made for B.Pharm, M.Pharm, Pharm.D and D.Pharm students. Pick any pharmacy job role you see on LinkedIn (QC, QA, R&amp;D, regulatory, pharmacovigilance, clinical research, hospital, retail, sales and more), add your master resume, and the agent builds a tailored, ATS-friendly one-column resume. It only uses what you wrote and never invents experience or numbers.</p>
+  <div class="bar">
+    <button id="bSample">Sample: QC Analyst</button>
+    <button id="bSample2">Sample: Pharmacovigilance</button>
+    <button id="bSample3">Sample: Medical Representative</button>
+    <button id="bExport">Save my master resume (.json)</button>
+    <button id="bImport">Open saved master resume</button>
+    <button id="bReset">Clear everything</button>
+    <input type="file" id="fImport" accept=".json,application/json" hidden>
+  </div>
+</div></header>
+
+<div class="wrap">
+<main>
+  <!-- ================= INPUTS ================= -->
+  <section id="inputs">
+    <details class="how" open>
+      <summary>How to use (2 minutes)</summary>
+      <ol>
+        <li>Fill your <b>master resume</b> once. Include everything, even rough bullets and things that may not fit. Add numbers only where they are true.</li>
+        <li>Paste the <b>job description</b> and company name for each job you apply to.</li>
+        <li>Press <b>Run agent</b>. Read the report, tick only the skills you genuinely have, then download.</li>
+        <li>You can click into the resume preview and edit any text before downloading.</li>
+      </ol>
+      <p class="note">Your data stays in this browser (saved locally). Nothing is uploaded.</p>
+    </details>
+
+    <div class="card">
+      <h2><span class="n">1</span> Contact details</h2>
+      <div class="g2">
+        <div><label>Full name</label><input data-path="profile.name" autocomplete="name"></div>
+        <div><label>Email</label><input data-path="profile.email" type="email" autocomplete="email"></div>
+        <div><label>Phone</label><input data-path="profile.phone" autocomplete="tel" placeholder="+91 98765 43210"></div>
+        <div><label>City, State</label><input data-path="profile.location" placeholder="Pune, Maharashtra"></div>
+        <div><label>LinkedIn (optional)</label><input data-path="profile.linkedin" placeholder="linkedin.com/in/yourname"></div>
+        <div><label>GitHub / portfolio (optional)</label><input data-path="profile.github"></div>
+      </div>
+      <label>Headline (optional, shown under your name in designed templates)</label>
+      <input data-path="profile.headline" placeholder="B.Pharm Graduate | Quality Control &amp; Analytical Testing">
+      <label>Photo (optional, designed templates only; stays on your computer)</label>
+      <div class="toolbar" style="margin:0"><input type="file" id="fPhoto" accept="image/*" style="flex:1"><button class="sm" id="bPhotoX" type="button">Remove photo</button></div>
+      <div class="note" id="photoNote"></div>
+      <label>Summary (optional, 2 lines in your own words)</label>
+      <textarea data-path="summary" rows="2" placeholder="Leave empty if unsure. Freshers often do better without a summary."></textarea>
+    </div>
+
+    <div class="card"><h2><span class="n">2</span> Master resume</h2>
+      <p class="hint">Put everything here. The agent chooses what fits each job.</p>
+      <div id="list-education"></div>
+      <div id="list-experience"></div>
+      <div id="list-projects"></div>
+      <label>Skills (one group per line, like <i>Analytical: HPLC, UV, titration</i>). Optional: add <i>(4/5)</i> after a skill to show a level bar in designed templates; leave it off if unsure.</label>
+      <textarea data-path="skills" rows="5" placeholder="Analytical: HPLC, UV, dissolution&#10;Compliance: GMP, GLP, SOPs&#10;Software: MS Excel, ChemDraw, SPSS&#10;Soft skills: communication, teamwork"></textarea>
+      <label>Certifications / training (one per line)</label>
+      <textarea data-path="certs" rows="3"></textarea>
+      <label>Pharmacy registration &amp; exams (optional, e.g. State Pharmacy Council registration, GPAT)</label>
+      <textarea data-path="reg" rows="2" placeholder="Registered Pharmacist, Maharashtra State Pharmacy Council&#10;Qualified GPAT 2026"></textarea>
+      <label>Achievements, leadership, extracurricular (one per line)</label>
+      <textarea data-path="achievements" rows="3"></textarea>
+    </div>
+
+    <div class="card"><h2><span class="n">3</span> Target job</h2>
+      <label>Find a pharmacy job role (LinkedIn titles). Type to search, e.g. QC, PV, CRA, regulatory, hospital, medical rep</label>
+      <input id="roleSearch" placeholder="Search roles…" autocomplete="off">
+      <select id="roleSel" style="margin-top:6px"></select>
+      <div class="note" id="roleCount"></div>
+      <div class="g2">
+        <div><label>Company name (optional)</label><input data-path="job.company"></div>
+        <div><label>Job title (as shown on LinkedIn)</label><input data-path="job.title"></div>
+      </div>
+      <label>Job description <span id="jdNote" class="note"></span></label>
+      <textarea data-path="job.jd" rows="11" placeholder="Best: open the job on LinkedIn, copy the text under About the job, and paste it here. Or choose a role above to load a typical description."></textarea>
+      <div class="toolbar" style="margin:6px 0 0"><button class="sm" id="bTpl">Load typical JD for chosen role</button></div>
+    </div>
+
+    <div class="card"><h2><span class="n">4</span> Resume design</h2>
+      <p class="hint"><b>ATS Classic</b> is the safest for online job portals. The designed templates look great for email, WhatsApp, LinkedIn and campus placements, but some portals read columns and photos badly. Changing the design rebuilds the preview.</p>
+      <div id="tplGrid" class="tplgrid"></div>
+      <div class="g2"><div><label>Accent colour (designed templates)</label>
+        <select data-path="opts.accent"><option value="#1f3a6e">Navy</option><option value="#2f5bea">Blue</option><option value="#0f766e">Teal</option><option value="#166534">Green</option><option value="#7f1d1d">Maroon</option><option value="#374151">Charcoal</option></select></div></div>
+    </div>
+    <div class="card"><h2><span class="n">5</span> Options</h2>
+      <div class="g2">
+        <div><label>Career level</label>
+          <select data-path="opts.level">
+            <option value="new_grad">Fresher (final year / just graduated)</option>
+            <option value="entry_level">0–2 years of experience</option>
+            <option value="mid_level">3–7 years of experience</option>
+            <option value="senior_ic">8+ years (senior specialist)</option>
+            <option value="manager">Manager / Head</option>
+          </select></div>
+        <div><label>Length</label>
+          <select data-path="opts.pages"><option value="auto">Auto (best fit)</option><option value="one_page">One page</option><option value="two_page">Two pages</option></select></div>
+        <div><label>Tone / font</label>
+          <select data-path="opts.tone"><option value="modern">Modern professional (Calibri)</option><option value="conservative">Conservative (Times New Roman)</option><option value="technical">Technical (Arial)</option><option value="analytical">Analytical (Cambria)</option></select></div>
+        <div><label>Paper size</label>
+          <select data-path="opts.paper"><option value="A4">A4 (India / UK)</option><option value="Letter">US Letter</option></select></div>
+      </div>
+    </div>
+    <div class="runrow"><button class="pri" id="bRun">▶ Run agent</button></div>
+  </section>
+
+  <!-- ================= OUTPUT ================= -->
+  <section id="outputs">
+    <div class="tabs" id="tabs">
+      <button data-tab="report" class="on">Agent report</button>
+      <button data-tab="resume">Resume &amp; download</button>
+      <button data-tab="checks">ATS checklist</button>
+    </div>
+    <div class="pane on" id="pane-report"><div class="card empty">Fill the left side and press <b>Run agent</b>. Or try a sample first.</div></div>
+    <div class="pane" id="pane-resume">
+      <div class="toolbar">
+        <button class="pri" id="bDocx">⬇ Download Word (.docx)</button>
+        <button id="bPrint">🖨 Save as PDF / Print</button>
+        <button id="bCopy">Copy plain text</button>
+        <button id="bRecheck">Re-check my edits</button>
+        <span class="sp"></span><span class="note" id="fitNote"></span>
+      </div>
+      <p class="note">Tip: click on any text in the preview to edit it. In the print window choose <b>Save as PDF</b>, margins <b>None</b>, and turn off headers and footers.</p>
+      <div class="preview-wrap" id="pvwrap"><div id="scaler"><div class="page" id="page" contenteditable="true" spellcheck="true"></div></div></div>
+    </div>
+    <div class="pane" id="pane-checks"><div class="card empty">Run the agent to see the ATS checklist.</div></div>
+  </section>
+</main>
+<footer class="brand">Designed and Created by <b>Dr. Babaso Udugade</b> and <b>Mrs. Swati Udugade</b><br>Copyright © Maharashtra Academy of Skills and Knowledge<br>Registered under MSME</footer>
+</div>
+<datalist id="degrees"><option value="B.Pharm"><option value="M.Pharm (Pharmaceutics)"><option value="M.Pharm (Pharmaceutical Analysis)"><option value="M.Pharm (Pharmaceutical Chemistry)"><option value="M.Pharm (Pharmacology)"><option value="M.Pharm (Pharmacognosy)"><option value="M.Pharm (Quality Assurance)"><option value="M.Pharm (Regulatory Affairs)"><option value="Pharm.D"><option value="D.Pharm"><option value="B.Sc"><option value="M.Sc"></datalist>
+<div id="measure"></div>
+<div id="printRoot"></div>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const lines=t=>String(t||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+const LS='ats_resume_agent_v1';
+
+/* ---------------- state ---------------- */
+const blank=()=>({profile:{name:'',email:'',phone:'',location:'',linkedin:'',github:'',headline:''},photo:'',summary:'',
+  education:[{}],experience:[],projects:[],skills:'',certs:'',reg:'',achievements:'',
+  job:{company:'',title:'',jd:'',rkey:'',autoJD:false},opts:{level:'new_grad',pages:'auto',tone:'modern',paper:'A4',tpl:'ats',accent:'#1f3a6e'},extra:[]});
+let state=blank();
+try{const s=localStorage.getItem(LS);if(s)state=Object.assign(blank(),JSON.parse(s))}catch(e){}
+state.opts=Object.assign(blank().opts,state.opts);state.profile=Object.assign(blank().profile,state.profile);
+let saveT;function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}},300)}
+const getPath=p=>p.split('.').reduce((o,k)=>o&&o[k],state);
+const setPath=(p,v)=>{const a=p.split('.');let o=state;while(a.length>1){o=o[a.shift()]=o[a[0]]||{}}o[a[0]]=v};
+
+const SEC={
+ education:{title:'Education',add:'+ Add education',fields:[['school','Institution','i'],['degree','Degree / programme','i'],['date','Dates','i','Aug 2022 – Jun 2026'],['gpa','CGPA / percentage (optional)','i'],['details','Coursework, honours (optional)','t','Relevant coursework: ...']]},
+ experience:{title:'Industrial training, internships & experience',add:'+ Add experience',fields:[['role','Role / title','i'],['org','Organisation','i'],['date','Dates','i','Jun 2025 – Jul 2025'],['location','City (optional)','i'],['bullets','Bullets, one per line (rough notes are fine)','t']]},
+ projects:{title:'Projects & research',add:'+ Add project',fields:[['name','Project title','i'],['tech','Tools / methods used','i'],['date','Dates','i','Jan 2026 – Apr 2026'],['link','Link (optional)','i'],['bullets','Bullets, one per line','t']]}
+};
+function renderList(sec){
+  const S=SEC[sec],box=$('#list-'+sec);
+  let h=`<h3 style="margin:14px 0 4px;font-size:14px">${S.title}</h3>`;
+  (state[sec]||[]).forEach((e,i)=>{
+    h+=`<div class="entry"><div class="hd"><span>#${i+1}</span><button class="sm danger" data-del="${sec}:${i}">Remove</button></div><div class="g2">`;
+    S.fields.forEach(f=>{
+      const [k,l,t,ph]=f,v=esc(e[k]||''),full=t==='t';
+      h+=`<div style="${full?'grid-column:1/-1':''}"><label>${l}</label>`+
+        (full?`<textarea data-sec="${sec}" data-i="${i}" data-k="${k}" rows="${k==='bullets'?5:2}" placeholder="${esc(ph||'')}">${v}</textarea>`:
+        `<input data-sec="${sec}" data-i="${i}" data-k="${k}"${k==='degree'?' list="degrees"':''} value="${v}" placeholder="${esc(ph||'')}">`)+`</div>`;
+    });
+    h+=`</div></div>`;
+  });
+  h+=`<button class="sm" data-add="${sec}">${S.add}</button>`;
+  box.innerHTML=h;
+}
+function fillForm(){
+  Object.keys(SEC).forEach(renderList);
+  if(typeof renderTplGrid==='function'){renderTplGrid();updPhoto()}
+  if(typeof renderRoleSelect==='function'){renderRoleSelect($('#roleSearch')?$('#roleSearch').value:'');updJDNote()}
+  $$('[data-path]').forEach(el=>{el.value=getPath(el.dataset.path)||''});
+}
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset&&t.dataset.sec){(state[t.dataset.sec][+t.dataset.i]||(state[t.dataset.sec][+t.dataset.i]={}))[t.dataset.k]=t.value}
+  else if(t.dataset&&t.dataset.path){setPath(t.dataset.path,t.value);if(t.dataset.path==='job.jd'){state.job.autoJD=false;if(typeof updJDNote==='function')updJDNote()}}
+  else return;
+  save();
+});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-add],[data-del]');if(!b)return;
+  if(b.dataset.add){state[b.dataset.add].push({});renderList(b.dataset.add)}
+  else{const[s,i]=b.dataset.del.split(':');state[s].splice(+i,1);renderList(s)}
+  save();
+});
+
+/* ---------------- keyword engine ---------------- */
+const DICT=`HPLC;GC=gas chromatography|gc analysis|gc method;GC-MS=gc-ms|gcms|gc ms;LC-MS=lc-ms|lcms|lc ms;LC-MS/MS=lc-ms/ms|lcmsms|lc ms/ms;UV Spectroscopy=uv spectroscopy|uv-visible|uv visible|uv-vis|uv spectrophotometer|uv spectrophotometry;FTIR;NMR;Mass Spectrometry=mass spectrometry|mass spectra;Dissolution Testing=dissolution testing|dissolution;Titration=titration|titrations;Karl Fischer=karl fischer|kf titration;Potentiometry=potentiometry|ph meter;TLC=tlc|thin layer chromatography;HPTLC;Column Chromatography=column chromatography;Method Development=method development|analytical method development;Method Validation=method validation|analytical method validation;Method Transfer=method transfer|analytical method transfer;Impurity Profiling=impurity profiling|related substances;Forced Degradation=forced degradation|stress studies;Reference Standards=reference standards|working standards;Pharmacopoeia=pharmacopoeia|pharmacopeia|indian pharmacopoeia|usp|british pharmacopoeia;Empower=empower software|empower;LIMS;Data Integrity=data integrity|alcoa;ICH Guidelines=ich guidelines|ich guideline|ich;Calibration=calibration;Stability Studies=stability studies|stability study|stability testing;
+Microbial Limit Test=microbial limit test|mlt|bioburden;Sterility Testing=sterility testing|sterility test;Bacterial Endotoxin Test=bacterial endotoxin|bet test|lal test;Environmental Monitoring=environmental monitoring;Media Preparation=media preparation|culture media;Water System=water system|purified water|water for injection|wfi;Aseptic Techniques=aseptic technique|aseptic techniques;Cleanroom=cleanroom|clean room;Antimicrobial Testing=antimicrobial effectiveness|antimicrobial assay;
+Tablet Manufacturing=tablet manufacturing|tablet compression|compression;Granulation=granulation|wet granulation|dry granulation;Coating=film coating|tablet coating;Capsule Filling=capsule filling|capsules;Sterile Manufacturing=sterile manufacturing|injectables|parenteral|aseptic filling;Lyophilization=lyophilization|freeze drying;Packaging=packaging operations|blister packing|primary packaging|secondary packaging;BMR=bmr|bpr|batch manufacturing record|batch records;IPQC=ipqc|in-process quality control|in-process checks;Line Clearance=line clearance;Production Planning=production planning;Oral Liquids=oral liquids|syrups;Semisolids=semisolids|creams|ointments;Solid Oral Dosage=solid oral dosage|oral solid dosage|osd;
+Formulation=formulation|formulations;Preformulation=preformulation;Excipient Compatibility=excipient compatibility|drug-excipient;QbD=qbd|quality by design;Design of Experiments=design of experiments|doe;Controlled Release=controlled release|sustained release|extended release|modified release;Nanoparticles=nanoparticles|nanoformulation|nanotechnology;Technology Transfer=technology transfer|tech transfer;Scale-up=scale-up|scale up;Packaging Development=packaging development;Bioavailability=bioavailability;Bioequivalence=bioequivalence;
+Quality Assurance=quality assurance|qa;Quality Control=quality control|qc;QMS=qms|quality management system;eQMS=eqms|trackwise|veeva vault;Document Control=document control|documentation control;SOP=sop|sops|standard operating procedure|standard operating procedures;CAPA=capa;Deviation Handling=deviation|deviations;Change Control=change control;OOS/OOT=oos|oot|out of specification|out of trend;Market Complaints=market complaint|market complaints|product complaint;Product Recall=product recall|recall;Internal Audit=internal audit|internal audits|self inspection;Regulatory Audit=regulatory audit|usfda inspection|regulatory inspection|audit readiness;Vendor Qualification=vendor qualification|vendor audit|supplier qualification;APQR=apqr|annual product quality review|product quality review;Batch Release=batch release|batch record review|batch review;GMP=gmp|cgmp|good manufacturing practice|good manufacturing practices;GLP=glp|good laboratory practice;GDP=good documentation practice|good documentation practices|good distribution practice|gdp;Documentation=documentation;Schedule M=schedule m;WHO GMP=who gmp|who-gmp;Quality Risk Management=quality risk management|qrm;GMP Training=gmp training|training records;
+Equipment Qualification=equipment qualification|iq/oq/pq|iqoq|installation qualification;Process Validation=process validation;Cleaning Validation=cleaning validation;Computer System Validation=computer system validation|csv;Risk Assessment=risk assessment|fmea|risk management;
+Regulatory Affairs=regulatory affairs|regulatory submissions;CTD=ctd|common technical document;eCTD=ectd;Dossier Compilation=dossier|dossiers|dossier compilation;ANDA=anda;DMF=dmf|drug master file;CMC=cmc;Post-approval Changes=post-approval changes|variations|post approval;Product Registration=product registration|marketing authorisation|marketing authorization;Labeling=labeling|labelling|artwork;Regulatory Intelligence=regulatory intelligence;Regulatory Publishing=regulatory publishing|ectd publishing|publishing;Query Response=deficiency response|query response|deficiency letters;USFDA=usfda|us fda|fda;EMA=european medicines agency;CDSCO=cdsco;Drugs and Cosmetics Act=drugs and cosmetics act|drugs & cosmetics act|d&c act;Medical Device Regulation=mdr|medical device regulation|iso 13485|ce marking;ISO 14971=iso 14971;Technical File=technical file|design dossier;
+Pharmacovigilance=pharmacovigilance|drug safety;ICSR=icsr|individual case safety report;Case Processing=case processing;MedDRA=meddra;WHO-DD=who-dd|who drug dictionary|who-drug;Argus=argus safety|oracle argus|argus;Safety Database=safety database|aris g|arisg;Signal Detection=signal detection|signal management;PSUR/PBRER=psur|pbrer|aggregate reports|periodic safety update;Literature Screening=literature screening|literature surveillance;Case Narrative=case narrative|narrative writing;Causality Assessment=causality assessment|causality|naranjo|who-umc;Risk Management Plan=risk management plan|rmp;ADR Reporting=adr reporting|adverse drug reaction|adverse event|adverse events|adr monitoring;E2B=e2b;PvPI=pvpi;
+Clinical Research=clinical research|clinical trials|clinical trial;GCP=gcp|ich-gcp|good clinical practice;Clinical Trial Protocol=protocol|study protocol;Informed Consent=informed consent|icf;Site Monitoring=site monitoring|monitoring visits|site visits;SDV=sdv|source data verification;TMF=tmf|trial master file;Ethics Committee=ethics committee|irb|iec;Investigator Site File=isf|investigator site file;Site Start-up=site initiation|site selection|site start-up|study start-up|site activation;Trial Coordination=trial coordination|study coordination;eCRF=ecrf|crf|case report form;EDC=edc|medidata|rave|oracle clinical;Query Management=query management|data queries|data cleaning;Clinical Data Management=clinical data management|cdm;SDTM=sdtm|cdisc;Medical Coding=medical coding|coding of adverse events;Biostatistics=biostatistics|statistical analysis plan;SAS=sas programming|sas software|sas;R Programming=r programming|rstudio|r language;SQL;Python;Data Management Plan=data management plan|dmp;Statistics=statistics|statistical analysis;SPSS=spss;GraphPad=graphpad|graphpad prism;
+Bioanalytical Method=bioanalytical|bioanalysis;BA/BE Studies=ba/be|be studies;Pharmacokinetics=pharmacokinetics|pk analysis;Phoenix WinNonlin=winnonlin|phoenix;DMPK=dmpk;Toxicology=toxicology|toxicity studies|acute toxicity;Pharmacology=pharmacology|pharmacological screening|preclinical;In Vitro Assays=in vitro|cell-based assays|cell culture|mtt assay;ELISA=elisa;Animal Studies=animal studies|animal handling|in vivo|cpcsea;
+Medicinal Chemistry=medicinal chemistry|medchem;Organic Synthesis=organic synthesis|multi-step synthesis;Process Chemistry=process chemistry|process development;API=api manufacturing|active pharmaceutical ingredient|api;Reaction Monitoring=reaction monitoring;ChemDraw=chemdraw;Molecular Docking=molecular docking|docking;CADD=cadd|computer-aided drug design;QSAR=qsar;Cheminformatics=cheminformatics|schrodinger|maestro;Bioinformatics=bioinformatics|network pharmacology;AutoDock=autodock;Literature Review=literature review|literature survey;Research=research;Patent=patent|patents;
+Medical Writing=medical writing;Regulatory Writing=regulatory writing|clinical study report|csr;Scientific Writing=scientific writing|manuscript|publications;Medical Information=medical information|medical queries;PubMed=pubmed|medline|embase;Publication Planning=publication planning;Medical Editing=proofreading|medical editing;Content Development=content development|scientific content;Scientific Communication=scientific communication;
+Prescription Review=prescription review|prescription screening|prescription handling|dispensing;Drug Interactions=drug interactions|drug-drug interactions;Medication Reconciliation=medication reconciliation;Therapeutic Drug Monitoring=therapeutic drug monitoring|tdm;Patient Counselling=patient counselling|patient counseling|counselling;Antimicrobial Stewardship=antimicrobial stewardship|antibiotic stewardship;Drug Information=drug information;Formulary Management=formulary|formulary management;Clinical Pharmacy=ward rounds|clinical rounds|clinical pharmacy;Inventory Management=inventory management|stock management|inventory;Narcotics Handling=narcotics|schedule h|schedule x|controlled substances;Pharmacy Software=pharmacy software|billing software|hospital information system;Pharmacy Practice Regulations=pharmacy practice regulations;OTC Products=otc;E-Pharmacy=e-pharmacy|online pharmacy;Cold Chain=cold chain|temperature-controlled;Customer Service=customer service|customer support;
+Medical Representative=medical representative|medical sales representative;Doctor Detailing=detailing|doctor calling|physician calls|doctor detailing;Territory Management=territory management|territory|beat planning;Sales Targets=sales targets|target achievement|primary sales|secondary sales;Product Knowledge=product knowledge|product launch;Brand Management=brand management|brand planning|product management;Pharma Marketing=pharma marketing|marketing campaigns|cme;Market Research=market research|market analysis;KOL Management=kol|key opinion leader;Key Account Management=key account|institutional sales|tender;Business Development=business development;Market Access=market access|pricing|reimbursement;IQVIA=iqvia|sales forecasting|forecasting;CRM;Stockist Management=stockist|chemist relationship|distributor management|distribution;
+Procurement=procurement|purchase;Vendor Management=vendor management;Warehouse Management=warehouse|stores management|wms;Demand Planning=demand planning|supply planning|s&op;SAP=sap;ERP=erp;Logistics=logistics;Import-Export=import-export|export documentation|customs;
+Pharmacoeconomics=pharmacoeconomics|heor|health economics;Real-World Evidence=real-world evidence|rwe|real world data;Pharmacoepidemiology=pharmacoepidemiology;Drug Utilization=drug utilization;Data Analysis=data analysis|data analytics;Data Visualization=data visualization|data visualisation;Power BI=power bi|powerbi;Tableau;Excel=ms excel|microsoft excel|advanced excel|excel spreadsheets|pivot tables|vlookup;
+Herbal Formulation=herbal formulation|polyherbal|herbal;Phytochemistry=phytochemistry|phytochemical;Pharmacognosy=pharmacognosy|crude drug standardization;Nutraceuticals=nutraceutical|nutraceuticals|dietary supplements;FSSAI=fssai|food safety;AYUSH=ayush|ayurveda|ayurvedic;Cosmetic Formulation=cosmetic formulation|cosmetics;Standardization=standardization|standardisation;
+Drug Inspection=drug inspection|drug inspector|sampling;Teaching=teaching|lecture delivery|lesson planning|curriculum;Lab Instruction=practical instruction|lab instruction|laboratory instruction;GPAT=gpat;NET=ugc net|csir net;Research Fellowship=jrf|srf|junior research fellow;EHS=ehs|environmental health and safety|environment health and safety|safety audits;Project Management=project management;Training=training;
+Communication=communication|communication skills|verbal communication|written communication;Teamwork=teamwork|collaboration|team player;Leadership=leadership;Problem Solving=problem solving|problem-solving;Time Management=time management;Presentation Skills=presentation skills|presentations|public speaking;Analytical Skills=analytical skills|analytical thinking;Attention to Detail=attention to detail|detail-oriented|detail oriented;Critical Thinking=critical thinking;Adaptability=adaptability;Negotiation=negotiation;Report Writing=report writing|technical writing;MS Office=ms office|microsoft office|ms word|powerpoint;Mentoring=mentoring|mentorship;Volunteering=volunteer|volunteering`.replace(/\n/g,'').split(';').filter(Boolean);
+/* ---------- Pharmacy job role library (LinkedIn-style titles) ---------- */
+const DOM={
+qc:{n:'Quality Control (QC) & Analytical Testing',
+ resp:['Perform routine analysis of raw materials, in-process samples and finished products using HPLC, GC, UV spectroscopy and dissolution testing','Prepare standard and sample solutions, follow SOPs and maintain documentation as per GLP and GMP','Perform titration, Karl Fischer and pH analysis and handle calibration of instruments','Support stability studies and report OOS/OOT results for investigation','Ensure data integrity and good documentation practices using Empower or LIMS'],
+ req:['B.Pharm / M.Pharm / M.Sc in Pharmaceutical Analysis or Chemistry','Hands-on knowledge of HPLC and UV spectroscopy','Understanding of GMP, GLP, ICH guidelines and pharmacopoeia','Good communication skills, attention to detail and teamwork'],
+ pref:['Exposure to Empower or LIMS','Internship in a QC laboratory','Knowledge of method validation and method transfer'],
+ roles:['Quality Control Analyst','Senior Quality Control Analyst','Quality Control Executive','Trainee Analyst (QC)','HPLC / GC Analyst|gas chromatography, HPLC','Raw Material & Packing Material Analyst|reference standards','Finished Product Analyst','Stability Analyst|stability studies, forced degradation','In-Process QC (IPQC) Analyst|IPQC, line clearance','Wet Chemistry Analyst|titration, potentiometry','Instrument Calibration Analyst|calibration','QC Documentation & Data Review Analyst|data integrity, document control','Analytical Chemist','Laboratory Chemist','Chemist - Quality Control']},
+micro:{n:'QC Microbiology & Sterile Assurance',
+ resp:['Perform microbial limit test, sterility testing and bacterial endotoxin test on raw materials and finished products','Carry out environmental monitoring of cleanrooms and prepare culture media as per SOP','Monitor water system samples (purified water, WFI) and maintain bioburden records','Follow GMP, GLP and good documentation practices; investigate OOS and deviations','Perform antimicrobial effectiveness testing and growth promotion testing'],
+ req:['B.Pharm / M.Pharm / M.Sc in Microbiology','Knowledge of aseptic techniques, sterility testing and microbial limit test','Understanding of GMP, cleanroom behaviour and pharmacopoeia requirements','Attention to detail, documentation and teamwork'],
+ pref:['Experience in environmental monitoring or a sterile plant','Knowledge of data integrity and LIMS'],
+ roles:['Microbiologist (QC Microbiology)','Microbiology Analyst','Microbiology Trainee','Sterility Assurance Executive|sterile manufacturing, aseptic techniques','Environmental Monitoring Executive|environmental monitoring, cleanroom','Water System Analyst|water system']},
+qa:{n:'Quality Assurance (QA) & Compliance',
+ resp:['Review batch manufacturing records and batch release documents as per GMP','Handle deviations, change control, CAPA and market complaints through the QMS','Prepare and control SOPs and ensure document control and training records','Support internal audits and regulatory audit readiness (USFDA, WHO GMP)','Review OOS/OOT investigations and ensure data integrity'],
+ req:['B.Pharm / M.Pharm with interest in Quality Assurance','Knowledge of GMP, Schedule M, ICH guidelines and GDP','Understanding of QMS, CAPA, deviation and change control','Good communication skills and attention to detail'],
+ pref:['Exposure to eQMS (TrackWise or Veeva Vault)','Internship in a pharmaceutical QA department','Knowledge of APQR and vendor qualification'],
+ roles:['Quality Assurance Executive','Quality Assurance Officer','Senior QA Executive','QA Trainee','IPQA Executive|IPQC, line clearance, batch record review','QMS Executive|QMS, deviation, CAPA, change control','Documentation Executive (Document Control)|document control, SOP','Compliance Officer|regulatory audit, internal audit','Internal Auditor|internal audit','Vendor Quality Assurance Executive|vendor qualification','Batch Release / Batch Record Review Executive|batch release, BMR','Market Complaints & Recall Executive|market complaints, product recall','Data Integrity Specialist|data integrity, computer system validation','Quality Systems Specialist|eQMS, QMS','APQR Executive|APQR','QA Executive - Sterile / Injectables|sterile manufacturing']},
+val:{n:'Validation, Qualification & Calibration',
+ resp:['Prepare and execute equipment qualification protocols (IQ/OQ/PQ)','Perform process validation and cleaning validation and prepare validation reports','Support computer system validation (CSV) and data integrity requirements','Carry out risk assessment (FMEA) and manage calibration schedules','Follow GMP, SOPs and good documentation practices'],
+ req:['B.Pharm / M.Pharm / B.Tech with knowledge of validation','Understanding of GMP, equipment qualification and process validation','Ability to write protocols and reports','Attention to detail and teamwork'],
+ pref:['Exposure to cleaning validation and sampling plans','Knowledge of computer system validation'],
+ roles:['Validation Executive','Validation Officer','Validation Trainee','Qualification Executive (IQ/OQ/PQ)|equipment qualification','Process Validation Executive|process validation','Cleaning Validation Executive|cleaning validation','Computer System Validation (CSV) Associate|computer system validation, data integrity','Calibration Executive|calibration']},
+ard:{n:'Analytical R&D (ARD)',
+ resp:['Develop and validate HPLC, GC and UV methods for assay, related substances and dissolution','Perform impurity profiling and forced degradation studies','Prepare method validation protocols and reports as per ICH guidelines','Support method transfer to QC and technical documentation','Maintain laboratory records as per GLP and data integrity'],
+ req:['M.Pharm / M.Sc in Pharmaceutical Analysis or Chemistry','Hands-on HPLC and method development experience','Knowledge of ICH guidelines, pharmacopoeia and method validation','Good scientific writing and documentation skills'],
+ pref:['Experience with LC-MS and Empower','Knowledge of QbD in analytical method development'],
+ roles:['Analytical Research Associate (ARD)','Analytical Development Scientist|method development, method validation','Research Associate - Analytical R&D','Method Validation Associate|method validation, ICH guidelines','Impurity Profiling Scientist|impurity profiling, LC-MS, mass spectrometry','Analytical Method Transfer Associate|method transfer','Dissolution Scientist|dissolution testing','Reference Standards Analyst|reference standards','Stability Studies Associate|stability studies','Analytical Chemist (R&D)']},
+frd:{n:'Formulation R&D & Technology Transfer',
+ resp:['Develop oral solid, liquid or semisolid formulations from preformulation to scale-up','Conduct excipient compatibility, stability studies and dissolution testing of prototype batches','Plan experiments using design of experiments (DoE) and QbD principles','Support technology transfer, scale-up and exhibit batches','Prepare formulation development reports and maintain laboratory notebooks'],
+ req:['M.Pharm in Pharmaceutics or Industrial Pharmacy / B.Pharm','Knowledge of preformulation, granulation, coating and controlled release','Understanding of QbD, DoE and ICH guidelines','Scientific writing and teamwork'],
+ pref:['Experience with nanoparticles or novel drug delivery','Exposure to technology transfer and scale-up'],
+ roles:['Formulation Scientist','Research Associate - Formulation R&D','Formulation Development Executive','Preformulation Scientist|preformulation, excipient compatibility','Oral Solid Dosage Scientist|solid oral dosage, tablet manufacturing, granulation, coating','Oral Liquids / Semisolids Scientist|oral liquids, semisolids','Parenteral Formulation Scientist|sterile manufacturing, lyophilization','Controlled Release Scientist|controlled release','Novel Drug Delivery Scientist|nanoparticles, controlled release','Technology Transfer Executive|technology transfer, scale-up','Packaging Development Executive|packaging development','Pilot Plant Executive|scale-up']},
+prod:{n:'Production & Manufacturing',
+ resp:['Operate and monitor tablet, capsule, liquid or injectable manufacturing as per BMR','Follow GMP, line clearance and in-process quality control checks (IPQC)','Maintain batch manufacturing records and good documentation practices','Support granulation, compression, coating and packaging operations','Participate in equipment cleaning, qualification and change control'],
+ req:['B.Pharm / M.Pharm / D.Pharm','Knowledge of tablet manufacturing, capsule filling and GMP','Understanding of SOP, BMR and line clearance','Willingness to work in shifts and teamwork'],
+ pref:['Industrial training in a manufacturing plant','Knowledge of sterile manufacturing or packaging'],
+ roles:['Production Executive','Production Officer','Production Trainee','Manufacturing Associate','Tablet Production Executive|tablet manufacturing, granulation, compression, coating','Capsule Production Executive|capsule filling','Oral Liquid Production Executive|oral liquids','Sterile / Injectable Production Executive|sterile manufacturing, aseptic techniques, lyophilization','Packaging Executive|packaging','Production Supervisor / Shift In-charge|line clearance, BMR','Process Operator','Production Planning Executive|production planning']},
+ra:{n:'Regulatory Affairs (RA)',
+ resp:['Compile and review regulatory dossiers in CTD and eCTD format for ANDA and ROW markets','Prepare responses to regulatory queries and deficiency letters','Handle post-approval changes, variations and product registration','Review labeling and artwork and ensure compliance with USFDA, EMA and CDSCO requirements','Track regulatory intelligence and Drugs and Cosmetics Act updates'],
+ req:['B.Pharm / M.Pharm (Regulatory Affairs preferred)','Knowledge of CTD, eCTD and ICH guidelines','Understanding of ANDA, DMF and CMC documentation','Good written communication and attention to detail'],
+ pref:['Experience with eCTD publishing tools','Knowledge of ROW or EU regulatory submissions'],
+ roles:['Regulatory Affairs Executive','Regulatory Affairs Associate','Regulatory Affairs Officer','Regulatory Affairs Trainee','Regulatory Publishing Specialist (eCTD)|eCTD, regulatory publishing','Dossier Preparation Executive|dossier compilation, CTD','Regulatory CMC Specialist|CMC, DMF','ANDA Regulatory Associate|ANDA, USFDA','Regulatory Labeling Specialist|labeling','Regulatory Intelligence Analyst|regulatory intelligence','Post-Approval Changes Executive|post-approval changes','ROW / Emerging Markets Regulatory Executive|product registration','CDSCO / India Regulatory Executive|CDSCO, Drugs and Cosmetics Act','Regulatory Operations Associate']},
+pv:{n:'Pharmacovigilance (PV) & Drug Safety',
+ resp:['Process individual case safety reports (ICSR) from spontaneous, literature and clinical trial sources','Perform case processing, MedDRA and WHO-DD coding and causality assessment','Write case narratives and enter data into the safety database (Argus)','Support aggregate reports such as PSUR/PBRER and signal detection','Ensure compliance with ICH E2B and timelines for adverse event reporting'],
+ req:['B.Pharm / M.Pharm / Pharm.D / M.Sc life sciences','Knowledge of pharmacovigilance, ADR reporting and MedDRA','Understanding of ICH guidelines and drug safety regulations','Good English writing and attention to detail'],
+ pref:['Exposure to Argus or another safety database','Internship in pharmacovigilance or ADR monitoring','Knowledge of literature screening'],
+ roles:['Pharmacovigilance Associate','Drug Safety Associate','Pharmacovigilance Trainee','Case Processing Associate|case processing, ICSR, MedDRA','Safety Data Associate','Safety Scientist|signal detection, causality assessment','Aggregate Report Associate|PSUR/PBRER, aggregate reports','Signal Detection Analyst|signal detection','Literature Surveillance Associate|literature screening','Argus Safety Associate|Argus, safety database','PV Quality & Compliance Associate|internal audit, SOP, CAPA','Risk Management Plan Associate|risk management plan','Medical Coding Associate (PV)|MedDRA, WHO-DD','Drug Safety Operations Analyst','PvPI Associate|PvPI, ADR reporting']},
+cr:{n:'Clinical Research & Clinical Operations',
+ resp:['Monitor clinical trial sites and perform source data verification (SDV) as per ICH-GCP','Maintain trial master file (TMF) and investigator site file (ISF) documentation','Support ethics committee submissions, informed consent and protocol compliance','Coordinate with investigators, site start-up and patient visits','Track study timelines and report adverse events'],
+ req:['B.Pharm / M.Pharm / Pharm.D / M.Sc life sciences','Knowledge of ICH-GCP and clinical research','Understanding of clinical trial protocol, informed consent and ethics committee','Good communication and organisational skills'],
+ pref:['Clinical research course (PGDCR or CCRP)','Experience with EDC or eCRF','Willingness to travel'],
+ roles:['Clinical Research Associate (CRA)','Junior Clinical Research Associate','Clinical Research Coordinator (CRC)','Clinical Trial Assistant (CTA)','Clinical Research Trainee','Clinical Operations Associate','Clinical Project Associate','Clinical Research Executive','Clinical Study Coordinator','Study Start-up Associate|site start-up, ethics committee','Site Activation Specialist|site start-up','Trial Master File (TMF) Specialist|TMF','Clinical Trial Coordinator|trial coordination','Site Monitoring Associate|site monitoring, SDV','Regulatory & Ethics Submissions Associate (Clinical)|ethics committee']},
+cdm:{n:'Clinical Data Management, Biostatistics & Programming',
+ resp:['Perform clinical data entry, data cleaning and query management in EDC systems','Review eCRF data, resolve queries and support database lock','Perform medical coding of adverse events and medications using MedDRA and WHO-DD','Prepare data management plan and support SDTM / CDISC mapping','Support biostatistics using SAS or R programming and basic statistics'],
+ req:['B.Pharm / M.Pharm / Pharm.D / M.Sc','Knowledge of clinical data management, ICH-GCP and EDC','Understanding of MedDRA coding and CDISC standards','Attention to detail and analytical skills'],
+ pref:['Exposure to Medidata Rave or Oracle Clinical','Knowledge of SAS or R programming'],
+ roles:['Clinical Data Associate','Clinical Data Coordinator','Clinical Data Manager','Clinical Data Management Trainee','Medical Coding Associate|medical coding, MedDRA, WHO-DD','Clinical Database Programmer|EDC, eCRF','SAS Programmer (Clinical)|SAS, SDTM','Statistical Programmer|SAS, R programming, SDTM','Biostatistician|biostatistics, SAS, R programming, statistics','Clinical Data Reviewer|data cleaning, query management','Clinical SAS Trainee|SAS']},
+mw:{n:'Medical Writing, Medical Information & Scientific Content',
+ resp:['Write and edit clinical study reports, protocols and regulatory documents','Prepare manuscripts, abstracts and scientific content after literature review in PubMed','Handle medical information queries from healthcare professionals','Ensure accuracy, referencing and compliance with ICH and journal guidelines','Support publication planning and content development'],
+ req:['B.Pharm / M.Pharm / Pharm.D / M.Sc with strong English writing','Knowledge of medical writing, literature review and scientific writing','Understanding of ICH-GCP, CTD summaries and referencing','Attention to detail and deadline management'],
+ pref:['Published research or review articles','Medical writing certification'],
+ roles:['Medical Writer','Associate Medical Writer','Regulatory Medical Writer|regulatory writing, CTD','Clinical Medical Writer|clinical study report, protocol','Scientific Content Writer|content development','Medical Editor|medical editing','Medical Information Associate|medical information','Medical Information Specialist|medical information','Publication Associate|publication planning, manuscript','Scientific Writer','Medical Science Liaison (MSL)|KOL management, scientific communication','Medical Affairs Associate|scientific communication','Literature Review Analyst|literature review, PubMed','Health Content Writer|content development','Medical Communications Executive|scientific communication']},
+hosp:{n:'Hospital & Clinical Pharmacy',reg:1,
+ resp:['Review prescriptions, check drug interactions and ensure rational use of medicines','Dispense medicines and handle narcotics and Schedule H drugs as per regulations','Provide patient counselling and drug information to doctors and nurses','Monitor ADR reporting, medication reconciliation and antimicrobial stewardship','Manage inventory, formulary and pharmacy software records'],
+ req:['B.Pharm / M.Pharm / Pharm.D with State Pharmacy Council registration','Knowledge of clinical pharmacy, drug interactions and patient counselling','Understanding of pharmacy practice regulations and the Drugs and Cosmetics Act','Communication skills and teamwork'],
+ pref:['Internship in a hospital pharmacy','Knowledge of therapeutic drug monitoring and ward rounds'],
+ roles:['Hospital Pharmacist','Clinical Pharmacist|ward rounds, therapeutic drug monitoring, medication reconciliation','Pharmacist - Inpatient Pharmacy','Pharmacist - Outpatient Pharmacy','Pharmacist In-charge','ICU / Critical Care Pharmacist|therapeutic drug monitoring','Oncology Pharmacist|medication reconciliation','Drug Information Pharmacist|drug information','Medication Safety Pharmacist|ADR reporting, medication reconciliation','Antimicrobial Stewardship Pharmacist|antimicrobial stewardship','Pharmacovigilance Officer (Hospital)|ADR reporting, PvPI','Central Sterile / IV Admixture Pharmacist|aseptic techniques','Clinical Pharmacy Intern / Trainee','Pharm.D Intern','Pharmacy Store In-charge (Hospital)|inventory management, formulary']},
+retail:{n:'Retail, Community & E-Pharmacy',reg:1,
+ resp:['Dispense prescription and OTC medicines accurately and counsel patients','Maintain stock, billing and expiry management using pharmacy software','Follow the Drugs and Cosmetics Act, Schedule H and narcotics record keeping','Handle customer service queries and inventory ordering','Coordinate with distributors and manage cold chain medicines'],
+ req:['D.Pharm / B.Pharm with State Pharmacy Council registration','Knowledge of dispensing, patient counselling and OTC products','Understanding of the Drugs and Cosmetics Act and pharmacy practice regulations','Customer service and communication skills'],
+ pref:['Experience with pharmacy billing software','Local language and customer handling skills'],
+ roles:['Retail Pharmacist','Community Pharmacist','Pharmacist (Chain Pharmacy)','Pharmacy Manager','Store Manager - Pharmacy','Assistant Pharmacist','Pharmacy Technician / Assistant|dispensing','Online Pharmacy (E-Pharmacy) Pharmacist|e-pharmacy, prescription review','E-Pharmacy Operations Executive|e-pharmacy','Pharmacy Operations Executive','Pharmacy Category Executive|inventory management','Customer Care Pharmacist (Health Helpline)|customer service, patient counselling','Pharmacy Inventory Executive|inventory management']},
+sales:{n:'Pharma Sales, Marketing & Business Development',
+ resp:['Visit doctors, chemists and hospitals as per territory plan and detail products','Achieve primary and secondary sales targets in the assigned territory','Build relationships with key opinion leaders and manage stockist relationships','Prepare tour plans and call reports and track competitor activity','Participate in CME events and product launches'],
+ req:['B.Pharm / D.Pharm / B.Sc with good communication skills','Knowledge of pharma product knowledge and doctor detailing','Understanding of territory management and sales targets','Willingness to travel and local language fluency'],
+ pref:['Internship or field training in pharma sales','Knowledge of MS Excel and CRM tools'],
+ roles:['Medical Representative','Senior Medical Representative','Trainee Medical Representative','Sales Executive - Pharma','Territory Business Manager|territory management, sales targets','Area Sales Manager|territory management, sales targets','Regional Sales Manager|sales targets','Product Executive|brand management, market research','Product Manager|brand management','Marketing Executive - Pharma|pharma marketing, market research','Brand Executive|brand management','Key Account Manager|key account','Institutional Sales Executive|institutional sales, tender','Hospital Sales Executive|institutional sales','Business Development Executive - Pharma|business development','Business Development Manager - Pharma|business development','Market Access Executive|market access','Medical Marketing Executive|CME, KOL management','Sales Operations Analyst|IQVIA, forecasting, Excel','Pharma Market Research Analyst|market research, IQVIA','Distributor / Stockist Executive|stockist']},
+scm:{n:'Supply Chain, Procurement & Warehouse',
+ resp:['Handle procurement of raw materials and packaging materials and manage vendors','Manage warehouse operations, inventory and GDP-compliant storage','Plan demand and supply and coordinate with production using ERP / SAP','Coordinate logistics, cold chain and import-export documentation','Maintain records for audits and vendor qualification'],
+ req:['B.Pharm / M.Pharm / MBA with pharma supply chain interest','Knowledge of procurement, warehouse management and GDP','Understanding of SAP or ERP and inventory management','Analytical skills and negotiation'],
+ pref:['Exposure to cold chain and import-export','Knowledge of GMP in stores'],
+ roles:['Supply Chain Executive','Procurement Executive','Purchase Executive (Raw Material / Packaging Material)|procurement','Materials Management Executive|inventory management, SAP','Warehouse Executive (Stores)|warehouse, GDP','Stores Pharmacist|warehouse, inventory management','Dispensing / Sampling Executive (Stores)|sampling','Demand Planning Analyst|demand planning, forecasting','Logistics Coordinator|logistics','Cold Chain Executive|cold chain','Import-Export Executive (Pharma)|import-export','Vendor Development Executive|vendor management, vendor qualification','Distribution Executive|distribution, stockist','Supply Planning Executive|demand planning, SAP']},
+disc:{n:'Drug Discovery, Medicinal Chemistry & CADD',
+ resp:['Design and carry out multi-step organic synthesis and monitor reactions by TLC and LC-MS','Purify and characterise compounds using column chromatography, NMR, FTIR and mass spectrometry','Support medicinal chemistry programmes and lead optimisation','Perform molecular docking, QSAR and CADD studies','Maintain laboratory notebooks and safety compliance'],
+ req:['M.Pharm in Pharmaceutical Chemistry / M.Sc Organic Chemistry','Hands-on organic synthesis and chromatography experience','Knowledge of NMR, FTIR and ChemDraw','Scientific writing and problem solving'],
+ pref:['Experience in process chemistry or CADD','Publications or patents'],
+ roles:['Research Associate - Medicinal Chemistry|medicinal chemistry, organic synthesis','Synthetic Chemist|organic synthesis, reaction monitoring, column chromatography','Process Chemist|process chemistry, scale-up','API Process Development Chemist|process chemistry, API','Research Scientist - Organic Chemistry|organic synthesis','Medicinal Chemist|medicinal chemistry','CADD Scientist|CADD, molecular docking, QSAR','Computational Chemist|cheminformatics, molecular docking','Bioinformatics Associate|bioinformatics, network pharmacology','Chemist - API Plant|process chemistry, API','Natural Product Chemist|phytochemistry','Junior Research Fellow (Drug Discovery)|JRF']},
+pre:{n:'Preclinical Pharmacology & Toxicology',
+ resp:['Conduct in vivo and in vitro pharmacological screening and toxicity studies','Handle animals as per CPCSEA guidelines and maintain study records','Perform cell-based assays such as MTT and ELISA','Prepare study protocols and reports and follow GLP','Analyse data using GraphPad Prism and statistics'],
+ req:['M.Pharm in Pharmacology / Toxicology / B.Pharm','Knowledge of animal studies, CPCSEA and pharmacology','Understanding of GLP and toxicity testing','Scientific writing and teamwork'],
+ pref:['Experience with cell culture and in vitro assays','Knowledge of GraphPad Prism'],
+ roles:['Preclinical Research Associate|pharmacology, toxicology','Pharmacologist|pharmacology','Toxicology Associate|toxicology, GLP','In Vitro Assay Associate|in vitro assays, cell culture, ELISA','In Vivo Pharmacology Associate|animal studies, CPCSEA','Research Associate - Pharmacology|pharmacology','Study Coordinator (Preclinical)|GLP','Laboratory Animal Technician|animal studies, CPCSEA','Safety Pharmacology Associate|pharmacology','Cell Culture Associate|cell culture','Junior Research Fellow (Pharmacology)|JRF']},
+bio:{n:'Bioanalytical, BA/BE & DMPK (CRO)',
+ resp:['Develop and validate bioanalytical methods using LC-MS/MS for plasma samples','Perform sample extraction, analysis and data processing for BA/BE studies','Calculate pharmacokinetic parameters using Phoenix WinNonlin','Follow GLP, GCP and SOPs and maintain data integrity','Prepare bioanalytical reports and support audits'],
+ req:['M.Pharm in Pharmaceutical Analysis / Pharmacokinetics / B.Pharm','Knowledge of LC-MS/MS, HPLC and bioanalytical method validation','Understanding of ICH guidelines, GLP and bioequivalence','Attention to detail'],
+ pref:['Experience with plasma sample handling','Knowledge of Phoenix WinNonlin'],
+ roles:['Bioanalytical Analyst|bioanalytical method, LC-MS/MS','Bioanalytical Research Associate|bioanalytical method','Bioanalytical Method Validation Associate|method validation, LC-MS/MS','BA/BE Study Associate|BA/BE studies, bioequivalence','Pharmacokinetics Associate|pharmacokinetics, Phoenix WinNonlin','DMPK Research Associate|DMPK','Clinical Pharmacology Associate|pharmacokinetics','Biologics QC Analyst (ELISA)|ELISA','Bioavailability Studies Executive|bioavailability']},
+heor:{n:'Healthcare Analytics, HEOR & Real-World Evidence',
+ resp:['Analyse healthcare and real-world data using Excel, SQL, R or Python','Prepare pharmacoeconomic models and HEOR evidence dossiers','Support real-world evidence studies and pharmacoepidemiology research','Perform literature review and data visualization using Power BI or Tableau','Prepare reports and presentations for stakeholders'],
+ req:['B.Pharm / M.Pharm / Pharm.D / MPH','Knowledge of pharmacoeconomics, statistics and literature review','Proficiency in Excel and basic SQL or R','Analytical and communication skills'],
+ pref:['Exposure to IQVIA data','Knowledge of drug utilization research'],
+ roles:['Healthcare Data Analyst|data analysis, Excel, SQL','Pharma Data Analyst|IQVIA, data analysis','HEOR Analyst / Associate|pharmacoeconomics','Real-World Evidence (RWE) Analyst|real-world evidence, SQL, R programming','Pharmacoepidemiology Associate|pharmacoepidemiology','Drug Utilization Research Associate|drug utilization','Health Informatics Associate|data analysis','Business Analyst - Life Sciences|Power BI, Tableau','Research Analyst - Pharma|literature review','Healthcare Consultant (Pharma)|market research','Competitive Intelligence Analyst - Pharma|market research']},
+herb:{n:'Herbal, Nutraceutical, Cosmetic & Food Safety',
+ resp:['Standardise herbal raw materials and extracts using TLC, HPTLC and phytochemical tests','Develop and evaluate herbal, nutraceutical or cosmetic formulations','Maintain documentation as per AYUSH, FSSAI and GMP requirements','Perform stability studies and quality control of finished products','Support regulatory filings for herbal and nutraceutical products'],
+ req:['B.Pharm / M.Pharm (Pharmacognosy / Pharmaceutics)','Knowledge of pharmacognosy, phytochemistry and herbal formulation','Understanding of FSSAI, AYUSH and GMP','Documentation skills'],
+ pref:['Experience in HPTLC or extraction','Knowledge of cosmetic regulations'],
+ roles:['Herbal Formulation Executive|herbal formulation','Nutraceutical Formulation Scientist|nutraceuticals, formulation','Quality Control Executive - Herbal|HPTLC, TLC, standardization','Pharmacognosist|pharmacognosy, phytochemistry','Phytochemist|phytochemistry, column chromatography','Cosmetic Formulation Chemist|cosmetic formulation','Cosmetic Regulatory Executive|Drugs and Cosmetics Act','FSSAI Regulatory Executive|FSSAI','Nutraceutical Regulatory Executive|nutraceuticals, FSSAI','AYUSH Product Executive|AYUSH','Food Safety Executive|FSSAI','Raw Herb Procurement Executive|procurement, standardization']},
+meddev:{n:'Medical Devices & Allied Healthcare Products',
+ resp:['Prepare technical files and regulatory submissions for medical devices','Support ISO 13485 quality management system and risk management (ISO 14971)','Handle product registration, labeling and post-market surveillance','Manage complaints, CAPA and audits','Track regulations such as MDR and CDSCO medical device rules'],
+ req:['B.Pharm / M.Pharm / B.Tech Biomedical','Knowledge of medical device regulation, ISO 13485 and technical files','Understanding of QMS, CAPA and risk management','Documentation skills'],
+ pref:['Knowledge of CE marking','Internship in regulatory or quality for devices'],
+ roles:['Medical Device Regulatory Affairs Associate|medical device regulation, technical file','Medical Device Quality Executive|ISO 13485, QMS','Complaint Handling Specialist (Devices)|market complaints, CAPA','Post-Market Surveillance Associate|adverse event','Clinical Evaluation Associate (Devices)|literature review','Technical File Specialist|technical file']},
+gov:{n:'Government, Drug Control & Public Health',reg:1,
+ resp:['Inspect pharmacies and manufacturing units under the Drugs and Cosmetics Act','Draw samples and enforce GMP and regulatory requirements','Review licences, records and complaints','Support pharmacovigilance and public health programmes (PvPI)','Prepare inspection reports and maintain documentation'],
+ req:['B.Pharm / M.Pharm with State Pharmacy Council registration','Knowledge of the Drugs and Cosmetics Act, Schedule M and pharmacy practice regulations','Understanding of GMP and drug inspection','Communication and report writing'],
+ pref:['Qualification in government competitive exams','Knowledge of pharmacovigilance'],
+ roles:['Drug Inspector','Government Pharmacist','Pharmacist (Public Health / PHC)','Government Analyst (Drug Testing Laboratory)|HPLC, pharmacopoeia, GLP','Drug Control Officer|drug inspection','CDSCO Technical Officer|CDSCO, regulatory affairs','Pharmacovigilance Programme (PvPI) Associate|PvPI, ADR reporting','Pharmacist (ESIC / Railways / Defence)','Medical Store Officer|inventory management, narcotics','Food Safety / FDA Officer|FSSAI, drug inspection']},
+acad:{n:'Academia, Teaching & Research Fellowships',
+ resp:['Teach pharmacy subjects, deliver lectures and conduct practicals','Plan lessons, prepare curriculum material and evaluate students','Guide student projects and publish research papers','Handle laboratory instruction and documentation','Participate in NAAC / NBA and institutional activities'],
+ req:['M.Pharm (with GPAT or NET where applicable) / Pharm.D','Knowledge of teaching, lesson planning and research methodology','Research publications and good communication','Computer skills (MS Office, PowerPoint)'],
+ pref:['Ph.D. or pursuing Ph.D.','Experience with research projects and grants'],
+ roles:['Assistant Professor (Pharmacy)','Lecturer - Pharmacy','Teaching Assistant|teaching','Lab Instructor / Demonstrator|lab instruction','Junior Research Fellow (JRF)|JRF, research','Senior Research Fellow (SRF)|SRF, research','Project Research Assistant|research, literature review','Research Scholar / Ph.D. Candidate|research, publications','Pharmacy Content Developer / Educator|content development, teaching','GPAT / Pharmacy Exam Coach|GPAT, teaching']},
+ops:{n:'EHS, Engineering, Projects & Trainee Programs',
+ resp:['Implement EHS policies and conduct safety audits in the pharmaceutical plant','Handle hazardous chemical safety, waste management and effluent compliance','Conduct risk assessment and incident investigation','Provide GMP training and maintain statutory records','Coordinate project management activities across departments'],
+ req:['B.Pharm / M.Pharm / B.Sc with relevant diploma or interest','Knowledge of EHS, risk assessment and GMP','Understanding of statutory compliance','Communication skills'],
+ pref:['Industrial safety diploma','Experience in a pharma plant'],
+ roles:['EHS Executive|EHS, risk assessment','Safety Officer (Pharma)|EHS','Pharma Graduate / Management Trainee|GMP, training','Pharma Project Coordinator|project management','Engineering / Utilities Executive (Pharma)|calibration, equipment qualification','Maintenance Executive (Pharma)|calibration','Training & Compliance Executive|GMP training, document control','Technical Services Executive|technology transfer','Plant Operations Trainee|GMP']}
+};
+const ROLEIDX=[];
+Object.entries(DOM).forEach(([dk,d])=>d.roles.forEach(r=>{const i=r.indexOf('|');ROLEIDX.push({dk,n:i<0?r:r.slice(0,i),ex:i<0?'':r.slice(i+1)})}));
+function templateJD(dk,role,extra){
+  const d=DOM[dk];if(!d)return '';
+  const L=a=>a.map(x=>'- '+x).join('\n');
+  return `${role}\nAbout the role: We are hiring pharmacy graduates (B.Pharm / M.Pharm / Pharm.D) for this position.\nResponsibilities:\n${L(d.resp)}\nRequirements:\n${L(d.req)}${extra?`\n- Key skills for this role: ${extra}.`:''}\nPreferred:\n${L(d.pref)}`;
+}
+
+const STOP=new Set(`a an and are as at be been but by can could do does for from has have had if in into is it its may more most must not of on or our out over per so such than that the their them then there these they this those to up us was we were what when where which while who will with within without you your yours also etc via per about across after all any both each few other some own same very too just only new key well high related relevant ensure support provide perform performing performed maintain maintaining develop developing good great excellent strong looking join joining position opportunity company candidate candidates role job work working works team teams years year experience experiences skills skill ability abilities knowledge understanding required requirements requirement preferred responsibilities responsibility including include includes use using used etc plus bonus nice have having hands-on hands basic least minimum ideal able willing like need needs needed should would help helping make making take taking get getting responsible degree graduate graduates fresh freshers trainee role roles day days time based apply applying hiring hire seeking`.split(/\s+/));
+const KW=DICT.map(s=>{
+  const [disp,al]=s.includes('=')?s.split('='):[s,s.toLowerCase()];
+  const aliases=[...new Set([disp.toLowerCase(),...al.split('|')])].filter(Boolean);
+  return {name:disp.trim(),aliases};
+});
+const RE_SPECIAL=/[.*+?^${}()|[\]\\\/]/g;
+function buildRe(aliases,flags){
+  const alts=aliases.map(a=>a.trim().split(/[\s\-]+/).map(p=>p.replace(RE_SPECIAL,'\\$&')).join('[\\s\\-]?')).join('|');
+  return new RegExp('(?:^|[^a-z0-9+#])(?:'+alts+')s?(?![a-z0-9+#])',flags||'i');
+}
+KW.forEach(k=>{k.re=buildRe(k.aliases);k.reg=buildRe(k.aliases,'gi')});
+function kwTest(k,text){
+  if(k.re.test(text))return true;
+  if(k.name==='Excel')return /\bexcel\b/i.test(text);
+  return false;
+}
+function kwCount(k,text){
+  let c=(text.match(k.reg)||[]).length;
+  if(k.name==='Excel'&&!c)c=(text.match(/\bExcel\b(?!\s+(?:in|at|as|with|and|under|by)\b)/g)||[]).length;
+  return c;
+}
+function extractKeywords(jd){
+  const text=jd.toLowerCase(),found=[];
+  // required vs preferred by section headings
+  let mode='req';const prefLines=[],reqLines=[];
+  lines(jd).forEach(l=>{
+    const short=l.length<70||/:$/.test(l);
+    if(short&&/(preferred|nice[- ]to[- ]have|good to have|bonus|desirable|added advantage|a plus)/i.test(l))mode='pref';
+    else if(short&&/(requirements?|qualifications?|must have|required|responsibilities|what you|about you|about the role|skills)/i.test(l))mode='req';
+    (mode==='pref'?prefLines:reqLines).push(l);
+  });
+  const reqText=reqLines.join('\n').toLowerCase();
+  KW.forEach(k=>{
+    const c=kwCount(k,text);if(!c)return;
+    const inReq=kwTest(k,reqText)||(k.name==='Excel'&&/\bexcel\b/i.test(reqText));
+    found.push({name:k.name,kw:k,count:c,req:inReq,weight:1+(inReq?1:0)+(c>=3?1:0),type:'skill'});
+  });
+  // generic recurring phrases
+  const used=new Set();KW.forEach(k=>k.aliases.forEach(a=>used.add(a)));
+  const frags=text.split(/[\n.,;:()•|\/\u2013\u2014]+/);
+  const bi={},uni={};
+  frags.forEach(f=>{
+    const toks=(f.match(/[a-z][a-z+#\-]*/g)||[]);
+    toks.forEach((t,i)=>{
+      if(!STOP.has(t)&&t.length>=5)uni[t]=(uni[t]||0)+1;
+      const n=toks[i+1];
+      if(n&&!STOP.has(t)&&!STOP.has(n)&&t.length>2&&n.length>2){const b=t+' '+n;bi[b]=(bi[b]||0)+1}
+    });
+  });
+  const covered=t=>found.some(f=>f.kw.aliases.some(a=>a.includes(t)||t.includes(a)));
+  const bigs=Object.entries(bi).filter(([b,c])=>c>=2&&!covered(b)).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  bigs.forEach(([b,c])=>found.push(mkTerm(b,c)));
+  const unis=Object.entries(uni).filter(([u,c])=>c>=3&&!covered(u)&&!bigs.some(([b])=>b.includes(u))).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  unis.forEach(([u,c])=>found.push(mkTerm(u,c)));
+  found.sort((a,b)=>b.weight-a.weight||b.count-a.count);
+  return found;
+}
+function mkTerm(t,c){
+  const kw={name:t,aliases:[t]};kw.re=buildRe([t]);kw.reg=buildRe([t],'gi');
+  return {name:t,kw,count:c,req:false,weight:1,type:'term'};
+}
+
+/* ---------------- text cleaning (humanizer pass) ---------------- */
+const RULES=[
+ [/\bleveraged\b/gi,'used'],[/\bleveraging\b/gi,'using'],[/\butili[sz]ed\b/gi,'used'],[/\butili[sz]ing\b/gi,'using'],
+ [/\bspearheaded\b/gi,'led'],[/\bin order to\b/gi,'to'],[/\ba variety of\b/gi,'several'],[/\bnumerous\b/gi,'several'],[/\bvarious\b/gi,'several'],
+ [/\s[\u2014\u2013]\s/g,', ']
+];
+const BUZZ=/\b(passionate|dynamic|results[- ]driven|synerg\w+|innovative|robust|seamless(?:ly)?|cutting[- ]edge|state[- ]of[- ]the[- ]art|fast[- ]paced|team player|hard[- ]?working|go[- ]getter|think outside the box|self[- ]motivated|proven track record|detail[- ]oriented)\b/i;
+const IRREG=new Set('built led ran wrote drove made won taught spoke set put began chose drew found gave grew held kept led met paid read sent sold shot taught took thought told understood wrote cut'.split(' '));
+const WEAKSTART=/^(responsible for|worked on|helped with|helped to|involved in|participated in|tasked with|duties included|was responsible)/i;
+function cleanBullet(raw){
+  let t=String(raw).replace(/^[\s•\-\*\u2013\u25AA\u25CF\u25E6\u00B7]+/,'').replace(/\s+/g,' ').trim();
+  const changes=[],flags=[];
+  RULES.forEach(([re,rep])=>{
+    t=t.replace(re,m=>{const r=rep===', '?rep:(m[0]===m[0].toUpperCase()?rep[0].toUpperCase()+rep.slice(1):rep);return r});
+  });
+  t=t.replace(/\.+$/,'').replace(/\s+,/g,',');
+  if(t)t=t[0].toUpperCase()+t.slice(1);
+  if(t!==String(raw).replace(/^[\s•\-\*\u2013\u25AA\u25CF\u25E6\u00B7]+/,'').replace(/\s+/g,' ').trim().replace(/\.+$/,'').replace(/^./,c=>c.toUpperCase()))changes.push(1);
+  const w=(t.split(/\s+/)[0]||'').toLowerCase().replace(/[^a-z]/g,'');
+  if(WEAKSTART.test(t))flags.push('weak');
+  else if(w&&!/ed$/.test(w)&&!IRREG.has(w)&&!/^(managing|leading|developing|using|working|building|analy[sz]ing|conducting)$/.test(w))flags.push('verb');
+  if(BUZZ.test(t))flags.push('buzz');
+  if(/\b(i|my|me)\b/i.test(t))flags.push('first');
+  if(!/\d/.test(t))flags.push('metric');
+  if(t.length>230)flags.push('long');
+  return {raw:String(raw).trim(),text:t,changed:t!==String(raw).trim().replace(/^[\s•\-\*]+/,''),flags};
+}
+
+/* ---------------- tailoring ---------------- */
+let LAST=null; // last agent result
+const LEVELS={new_grad:'Fresher',entry_level:'0–2 years',mid_level:'3–7 years',senior_ic:'8+ years',manager:'Manager / Head'};
+const kwScore=(text,kws)=>{let s=0;kws.forEach(k=>{if(kwTest(k.kw,text))s+=k.weight});return s};
+function masterText(){
+  const s=state,p=[s.summary,s.skills,s.certs,s.reg,s.achievements,(s.extra||[]).join(', ')];
+  ['education','experience','projects'].forEach(k=>(s[k]||[]).forEach(e=>p.push(Object.values(e).join(' \n'))));
+  return p.join('\n').toLowerCase();
+}
+const nonEmpty=e=>e&&Object.values(e).some(v=>String(v||'').trim());
+function parseSkills(kws){
+  const groups=[];
+  lines(state.skills).forEach(l=>{
+    const m=l.match(/^([^:]{1,40}):\s*(.+)$/);
+    const cat=m?m[1].trim():'Skills',items=(m?m[2]:l).split(/[,;•|]/).map(s=>s.trim()).filter(Boolean);
+    let g=groups.find(x=>x.cat===cat);if(!g)groups.push(g={cat,items:[]});
+    g.lvl=g.lvl||{};
+    items.forEach(i0=>{const lm=i0.match(/^(.*?)\s*\(\s*([1-5])\s*\/\s*5\s*\)\s*$/);const i=lm?lm[1].trim():i0;if(lm)g.lvl[i.toLowerCase()]=+lm[2];if(!g.items.some(x=>x.toLowerCase()===i.toLowerCase()))g.items.push(i)});
+  });
+  const all=groups.flatMap(g=>g.items.map(i=>i.toLowerCase()));
+  const ex=(state.extra||[]).filter(x=>!all.includes(x.toLowerCase()));
+  if(ex.length)groups.push({cat:'Additional',items:ex});
+  groups.forEach(g=>{g.items.sort((a,b)=>(kwScore(b,kws)>0)-(kwScore(a,kws)>0))});
+  return groups;
+}
+function buildModel(kws,cfg,log){
+  const s=state,m={profile:s.profile,summary:(s.summary||'').trim()};
+  const sc=t=>kwScore(t,kws);
+  const mk=(e,isProj)=>{
+    const bl=lines(e.bullets).map(cleanBullet);
+    bl.forEach((b,i)=>{b.score=sc(b.text);b.idx=i});
+    const head=Object.values(e).filter((v,i)=>typeof v==='string'&&!/^(\d|http)/.test(v)).join(' ');
+    return {e,bl,score:bl.reduce((a,b)=>a+b.score,0)+sc(head),isProj};
+  };
+  let exps=(s.experience||[]).filter(nonEmpty).map(e=>mk(e,false));
+  let projs=(s.projects||[]).filter(nonEmpty).map(e=>mk(e,true));
+  const dropped=[];
+  const rankedP=[...projs].sort((a,b)=>b.score-a.score);
+  const keepP=new Set(rankedP.slice(0,cfg.mp));
+  projs=projs.filter(p=>keepP.has(p)||(dropped.push({n:p.e.name||'Project',why:'lower relevance to this job / space'}),false));
+  projs.sort((a,b)=>b.score-a.score);
+  const rankedE=[...exps].sort((a,b)=>b.score-a.score);
+  const keepE=new Set(rankedE.slice(0,cfg.me));
+  exps=exps.filter(x=>keepE.has(x)||(dropped.push({n:(x.e.role||x.e.org||'Experience'),why:'lower relevance to this job / space'}),false));
+  const pick=(arr)=>arr.map((x,r)=>{
+    const n=Math.max(cfg.minB,r===0?cfg.mb:r===1?cfg.mb-1:cfg.mb-1);
+    const sel=[...x.bl].sort((a,b)=>b.score-a.score||a.idx-b.idx).slice(0,n);
+    x.sel=sel;x.cut=x.bl.length-sel.length;
+    sel.forEach(b=>{if(b.changed)log.push({before:b.raw,after:b.text})});
+    return x;
+  });
+  m.exps=pick(exps);m.projs=pick(projs);m.dropped=dropped;
+  m.edu=(s.education||[]).filter(nonEmpty);
+  m.skills=parseSkills(kws);
+  m.certs=lines(s.certs);m.reg=lines(s.reg);m.ach=lines(s.achievements);
+  // section order strategy
+  const lv=s.opts.level;
+  const es=m.exps.reduce((a,x)=>a+x.score,0),ps=m.projs.reduce((a,x)=>a+x.score,0);
+  if(lv==='new_grad')m.order=(es>ps&&m.exps.length)?['edu','exps','projs','skills','certs','ach']:['edu','projs','exps','skills','certs','ach'];
+  else if(lv==='entry_level')m.order=['edu','exps','projs','skills','certs','ach'];
+  else if(lv==='mid_level'||lv==='senior_ic')m.order=['skills','exps','projs','edu','certs','ach'];
+  else m.order=['exps','skills','projs','edu','certs','ach'];
+  const dk=(s.job.rkey||'').split('|')[0];m.regDom=!!(DOM[dk]&&DOM[dk].reg);
+  if(m.regDom)m.order.splice(m.order.indexOf('edu')+1,0,'reg');else m.order.splice(m.order.indexOf('certs'),0,'reg');
+  m.summaryOn=!!m.summary;
+  m.cfg=cfg;
+  return m;
+}
+const FONT={modern:"Calibri,Carlito,'Segoe UI',Arial,sans-serif",conservative:"'Times New Roman',Times,'Liberation Serif',serif",technical:"Arial,Helvetica,'Liberation Sans',sans-serif",analytical:"Cambria,Georgia,'Liberation Serif',serif"};
+const FONTNAME={modern:'Calibri',conservative:'Times New Roman',technical:'Arial',analytical:'Cambria'};
+function applyPaper(){
+  const o=state.opts,A4=o.paper!=='Letter';
+  const r=document.documentElement.style;
+  r.setProperty('--pw',A4?'210mm':'8.5in');r.setProperty('--ph',(A4?1123:1056)+'px');
+  r.setProperty('--rf',FONT[o.tone]||FONT.modern);
+  $('#pageStyle').textContent=`@page{size:${A4?'A4':'letter'};margin:0}`;
+}
+function fits(m){
+  const host=$('#measure');host.innerHTML=`<div class="page">${modelHTML(m)}</div>`;
+  applyPageClass(host.firstChild);const pg=host.firstChild,ph=state.opts.paper==='Letter'?1056:1123;
+  return {h:pg.scrollHeight,fit1:pg.scrollHeight<=ph+2,pages:Math.max(1,Math.ceil((pg.scrollHeight-2)/ph))};
+}
+function tailorToFit(kws,log){
+  const o=state.opts,want=o.pages==='auto'?((o.level==='new_grad'||o.level==='entry_level')?'one_page':'two_page'):o.pages;
+  const ladder=want==='one_page'?
+    [{mb:4,mp:3,me:3,minB:2},{mb:3,mp:3,me:3,minB:2},{mb:3,mp:2,me:2,minB:2},{mb:2,mp:2,me:2,minB:1},{mb:2,mp:1,me:2,minB:1},{mb:1,mp:1,me:1,minB:1}]:
+    [{mb:6,mp:4,me:4,minB:3},{mb:5,mp:4,me:4,minB:3},{mb:4,mp:3,me:3,minB:2},{mb:3,mp:3,me:3,minB:2}];
+  let m,ok=false,info;
+  for(const cfg of ladder){
+    log.length=0;m=buildModel(kws,cfg,log);info=fits(m);
+    if(want==='one_page'?info.fit1:info.pages<=2){ok=true;break}
+  }
+  m.want=want;m.fitOk=ok;m.pages=info.pages;
+  return m;
+}
+
+/* ---------------- agent pipeline ---------------- */
+const STAGES=[
+ ['Intake','Normalise your resume, job and company'],
+ ['Job analysis','Extract ATS keywords, required vs preferred'],
+ ['Strategy','Decide what to lead with and section order'],
+ ['Tailoring','Select bullets by fit, rewrite, humanise'],
+ ['ATS check','Keywords, headings, dates, contact format'],
+ ['Render','Build one-column resume (Word / PDF ready)'],
+ ['Validate','Final checks, placeholders, page fit']
+];
+let running=false;
+async function run(fast){
+  if(running)return;running=true;
+  const pane=$('#pane-report');showTab('report');
+  const ul=STAGES.map((s,i)=>`<li id="st${i}"><span class="ic">${i+1}</span><b>${s[0]}</b><small>${s[1]}</small></li>`).join('');
+  pane.innerHTML=`<div class="card"><h2>Agent is working…</h2><ul class="stages">${ul}</ul></div>`;
+  const set=(i,c,note)=>{const li=$('#st'+i);if(!li)return;li.className=c;li.querySelector('.ic').textContent=c==='done'?'✓':c==='fail'?'!':i+1;if(note)li.querySelector('small').textContent=note};
+  const step=async(i)=>{set(i,'act');if(!fast)await sleep(160)};
+  try{
+    // 1 intake
+    await step(0);
+    const miss=[];
+    if(!(state.profile.name||'').trim())miss.push('your name');
+    if(!/^\S+@\S+\.\S+$/.test((state.profile.email||'').trim()))miss.push('a valid email');
+    const hasBody=['experience','projects'].some(k=>(state[k]||[]).some(e=>lines(e.bullets).length));
+    if(!hasBody)miss.push('at least one experience or project with bullets');
+    if(!(state.education||[]).some(nonEmpty))miss.push('your education');
+    if((state.job.jd||'').trim().length<80)miss.push('a job role or the full job description');
+    if(miss.length){set(0,'fail','Missing: '+miss.join(', '));pane.querySelector('h2').textContent='Gate 1 failed: please add '+miss.join(', ');running=false;return}
+    set(0,'done','All required inputs present');
+    // 2 JD analysis
+    await step(1);
+    applyPaper();
+    const kws=extractKeywords(state.job.jd);
+    if(kws.length<3){set(1,'fail','Could not find enough keywords. Paste the full job description.');running=false;return}
+    const mt=masterText();
+    kws.forEach(k=>{k.inMaster=kwTest(k.kw,mt)||(state.extra||[]).some(x=>x.toLowerCase()===k.name.toLowerCase())});
+    set(1,'done',`${kws.length} keywords (${kws.filter(k=>k.req).length} required)`);
+    // 3 strategy + 4 tailoring happen together, shown separately
+    await step(2);set(2,'done',LEVELS[state.opts.level]);
+    await step(3);
+    const log=[];
+    const model=tailorToFit(kws,log);
+    set(3,'done',`${log.length} bullet(s) polished`);
+    // 6 render
+    await step(4);
+    const page=$('#page');page.innerHTML=modelHTML(model);
+    applyPageClass(page);
+    const text=page.innerText.toLowerCase();
+    kws.forEach(k=>{k.inTail=kwTest(k.kw,text)});
+    LAST={kws,model,log};
+    set(4,'done','Keyword coverage measured');
+    await step(5);fitPreview();set(5,'done',model.want==='one_page'?'One page':'Up to two pages');
+    await step(6);
+    LAST.checks=runChecks();
+    const fails=LAST.checks.filter(c=>c.s==='fail').length;
+    set(6,fails?'fail':'done',fails?fails+' item(s) need attention':'Passed');
+    await sleep(fast?0:250);
+    renderReport();renderChecks();
+  }catch(err){console.error(err);pane.innerHTML=`<div class="card"><h2>Something went wrong</h2><p>${esc(err.message)}</p></div>`}
+  running=false;
+}
+
+/* ---------------- checks ---------------- */
+function runChecks(){
+  const {kws,model:m}=LAST,page=$('#page'),text=page.innerText,low=text.toLowerCase(),C=[];
+  const add=(s,t,d)=>C.push({s,t,d:d||''});
+  const p=state.profile;
+  const digits=(p.phone||'').replace(/\D/g,'').length;
+  const okc=(p.name||'').trim()&&/^\S+@\S+\.\S+$/.test(p.email||'')&&digits>=10;
+  add(okc?'pass':'fail','Contact details are complete and machine-readable',okc?'Name, email and a phone number with 10+ digits are in the header (plain text, not an image).':'Add a full name, valid email and a 10+ digit phone number.');
+  add('pass','Standard section headings','Education, Experience, Projects, Skills are the headings ATS software expects.');
+  const _T=TPL[state.opts.tpl||'ats'];
+  if(_T.ats)add('pass','Single column, no tables, text boxes, icons or images','The layout is plain text in one column, which every ATS can parse.');
+  else add('warn','Designed template: '+_T.n,'Photos, sidebars and columns look great for email, WhatsApp, LinkedIn and campus placements, but many online ATS portals read them badly. Upload the ATS Classic version to job portals.');
+  // dates
+  const dre=/^((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?\s+)?\d{4}(\s*[\u2013\-]\s*(((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?\s+)?\d{4}|Present|Current))?$/i;
+  const bad=$$('#page [data-t=row] .r').map(e=>e.textContent.trim()).filter(d=>d&&!dre.test(d));
+  add(bad.length?'warn':'pass','Dates use one standard format',bad.length?'Use "Jun 2025 – Aug 2025" or "2022 – 2026". Check: '+bad.join('; '):'All dates look like "Mon YYYY – Mon YYYY".');
+  // placeholders
+  const ph=/\[[^\]]*\]|lorem|\bxxx+\b|your name|insert |tbd|\bn\/a\b/i.test(text.replace(/Your Name/,p.name?'':'Your Name'));
+  add(ph?'fail':'pass','No placeholder text left',ph?'Found bracket text or placeholder words. Search for [ ], XXX, TBD, Your Name.':'No [brackets], XXX or TBD found.');
+  // keyword coverage
+  const tot=kws.reduce((a,k)=>a+k.weight,0),got=kws.filter(k=>k.inTail).reduce((a,k)=>a+k.weight,0);
+  const pct=Math.round(100*got/tot);
+  const req=kws.filter(k=>k.req),reqGot=req.filter(k=>k.inTail).length;
+  const rp=req.length?Math.round(100*reqGot/req.length):100;
+  add(rp>=70?'pass':rp>=40?'warn':'fail',`Required keywords covered: ${reqGot} of ${req.length} (${rp}%)`,rp>=70?'Strong match for this job.':'Missing keywords are listed in the Agent report. Add only the ones you truly have.');
+  // stuffing
+  const stuffed=kws.filter(k=>kwCount(k.kw,text)>6).map(k=>k.name);
+  add(stuffed.length?'warn':'pass','No keyword stuffing',stuffed.length?'Used too often: '+stuffed.join(', ')+'. Use each keyword naturally 1 to 3 times.':'Keywords appear naturally.');
+  // bullets
+  const bl=$$('#page ul li').map(e=>e.textContent.trim());
+  const ex=bl.filter((b,i)=>true);
+  const withNum=bl.filter(b=>/\d/.test(b)).length;
+  const ratio=bl.length?withNum/bl.length:0;
+  add(ratio>=.3?'pass':'warn',`Numbers in bullets: ${withNum} of ${bl.length}`,ratio>=.3?'Good use of measurable detail.':'Add real numbers where you can (batches, samples, users, %, time saved). Never guess a figure.');
+  const weak=bl.filter(b=>WEAKSTART.test(b));
+  add(weak.length?'warn':'pass','Bullets start with action verbs',weak.length?`Rewrite ${weak.length} bullet(s) that start with "Responsible for / Worked on / Helped with". Try: Prepared, Analysed, Validated, Built, Presented.`:'No weak openers found.');
+  const verbs=bl.filter(b=>{const w=(b.split(/\s+/)[0]||'').toLowerCase().replace(/[^a-z]/g,'');return w&&!/ed$/.test(w)&&!IRREG.has(w)&&!WEAKSTART.test(b)&&!/^(managing|leading|developing|using|working|building)$/.test(w)});
+  if(verbs.length)add('warn',`${verbs.length} bullet(s) may not start with a past-tense verb`,'Check: "'+verbs.slice(0,2).map(v=>v.slice(0,50)).join('", "')+'"');
+  const buzz=bl.filter(b=>BUZZ.test(b)||BUZZ.test(m.summary||''));
+  add(buzz.length?'warn':'pass','No buzzwords or AI-sounding filler',buzz.length?'Replace words like passionate, dynamic, robust, seamless, innovative with a concrete fact.':'Wording is plain and specific.');
+  const first=bl.filter(b=>/\b(i|my|me)\b/i.test(b));
+  add(first.length?'warn':'pass','No first-person pronouns',first.length?'Remove "I", "my", "me" from bullets.':'Good.');
+  const long=bl.filter(b=>b.length>230);
+  add(long.length?'warn':'pass','Bullets are short enough (max about 2 lines)',long.length?long.length+' bullet(s) are too long. Split or trim them.':'All bullets are concise.');
+  // fit
+  const ph2=state.opts.paper==='Letter'?1056:1123,hgt=page.scrollHeight;
+  const pages=Math.max(1,Math.ceil((hgt-2)/ph2));
+  const want=m.want;
+  const fitOk=want==='one_page'?pages===1:pages<=2;
+  add(fitOk?'pass':'warn',`Length: ${pages} page${pages>1?'s':''} (target ${want==='one_page'?'1':'up to 2'})`,fitOk?'Fits the target length.':'Too long. Remove a project or shorten bullets, or choose two pages in Options.');
+  if(m.regDom&&!lines(state.reg).length)add('warn','Add your pharmacy registration','Hospital, retail and government pharmacist jobs expect State Pharmacy Council registration. Add it under Registration & Exams.');
+  add('pass','Only your own content is used','Every bullet comes from your master resume. Gaps are flagged, not filled in.');
+  if(!p.linkedin&&state.opts.level!=='new_grad')add('warn','Add a LinkedIn URL','Recruiters usually look for it.');
+  LAST.stat={pct,rp,reqGot,reqN:req.length,pages,fitOk,want};
+  return C;
+}
+function renderChecks(){
+  if(!LAST)return;
+  const ic={pass:'✓',warn:'!',fail:'✕'};
+  const n={pass:0,warn:0,fail:0};LAST.checks.forEach(c=>n[c.s]++);
+  $('#pane-checks').innerHTML=`<div class="card"><h2>ATS checklist <span class="note">${n.pass} passed · ${n.warn} to improve · ${n.fail} to fix</span></h2>
+  <ul class="chk">${LAST.checks.map(c=>`<li class="${c.s}"><span class="t">${ic[c.s]}</span><div>${esc(c.t)}<small>${esc(c.d)}</small></div></li>`).join('')}</ul></div>`;
+}
+
+/* ---------------- report ---------------- */
+function renderReport(){
+  const {kws,model:m,log,stat:st}=LAST;
+  const cls=v=>v>=70?'ok':v>=45?'warn':'bad';
+  const master=Math.round(100*kws.filter(k=>k.inMaster).reduce((a,k)=>a+k.weight,0)/kws.reduce((a,k)=>a+k.weight,0));
+  const lead=kws.filter(k=>k.inTail&&k.type==='skill').slice(0,6).map(k=>k.name);
+  const gaps=kws.filter(k=>!k.inMaster);
+  const trimmed=kws.filter(k=>k.inMaster&&!k.inTail);
+  const orderNames={edu:'Education',reg:'Registration',exps:'Experience',projs:'Projects',skills:'Skills',certs:'Certifications',ach:'Achievements'};
+  const secs=m.order.filter(k=>({edu:m.edu.length,reg:m.reg.length,exps:m.exps.length,projs:m.projs.length,skills:m.skills.length,certs:m.certs.length,ach:m.ach.length})[k]).map(k=>orderNames[k]);
+  const chip=(k)=>{
+    if(k.inTail)return `<span class="chip ok">✓ ${esc(k.name)}${k.req?'':' <small>(pref)</small>'}</span>`;
+    if(k.inMaster)return `<span class="chip warn" title="In your master resume but not placed in this version">${esc(k.name)}</span>`;
+    return '';
+  };
+  const gapChip=k=>`<label class="chip bad" style="margin:0;font-weight:500"><input type="checkbox" data-gap="${esc(k.name)}" ${(state.extra||[]).includes(k.name)?'checked':''}> ${esc(k.name)}${k.req?'':' <small>(pref)</small>'}</label>`;
+  const flagged=[];
+  m.exps.concat(m.projs).forEach(x=>x.sel.forEach(b=>{
+    if(b.flags.includes('weak'))flagged.push(['Weak opener',b.text]);
+    else if(b.flags.includes('verb'))flagged.push(['Start with an action verb',b.text]);
+    if(b.flags.includes('buzz'))flagged.push(['Buzzword',b.text]);
+  }));
+  const noMetric=m.exps.concat(m.projs).flatMap(x=>x.sel).filter(b=>b.flags.includes('metric')).length;
+  $('#pane-report').innerHTML=`
+  <div class="cards">
+    <div class="stat ${cls(st.pct)}"><b id="sPct">${st.pct}%</b><span>ATS keyword match (this resume)</span></div>
+    <div class="stat ${cls(master)}"><b>${master}%</b><span>Match using your full master resume</span></div>
+    <div class="stat ${cls(st.rp)}"><b id="sReq">${st.reqGot}/${st.reqN}</b><span>Required keywords found</span></div>
+    <div class="stat ${st.fitOk?'ok':'warn'}"><b id="sPages">${st.pages} pg</b><span>Length (target ${st.want==='one_page'?'1 page':'up to 2'})</span></div>
+  </div>
+  <div class="card"><h2>Strategy for ${esc(state.job.title||'this role')}${state.job.company?' at '+esc(state.job.company):''}</h2>
+    <ul class="plain">
+      ${state.job.autoJD?'<li><b>Note:</b> This uses a typical description for the role. Paste the real LinkedIn job description for a more accurate match.</li>':''}
+      <li><b>Level:</b> ${LEVELS[state.opts.level]} · <b>Design:</b> ${TPL[state.opts.tpl||'ats'].n} · <b>Font:</b> ${FONTNAME[state.opts.tone]} · <b>Paper:</b> ${state.opts.paper}</li>
+      <li><b>Section order:</b> ${secs.join(' → ')}${state.opts.level==='new_grad'?' (students lead with Education, then the most relevant evidence)':''}</li>
+      <li><b>Leading with:</b> ${lead.length?esc(lead.join(', ')):'general strengths (few direct matches found)'}</li>
+      <li><b>Projects shown:</b> ${m.projs.length?esc(m.projs.map(x=>x.e.name).join('; ')):'none'}${m.dropped.length?` · <b>Left out:</b> ${esc(m.dropped.map(d=>d.n).join('; '))} (lower fit or no space)`:''}</li>
+      <li><b>Summary:</b> ${m.summaryOn?'included (from your text)':'not included. A weak or generic summary hurts more than none.'}</li>
+    </ul></div>
+  <div class="card"><h2>Keywords from the job description</h2>
+    <p class="hint"><span class="chip ok">green</span> in this resume · <span class="chip warn">amber</span> you have it, but it was trimmed for space (add it back by editing the preview) · <span class="chip bad">red</span> not in your master resume.</p>
+    <div class="chips" id="kwChips">${kws.map(chip).join('')}</div>
+    ${gaps.length?`<h3 style="font-size:14px;margin:14px 0 4px">Honest gaps</h3>
+    <p class="hint">Tick a box <b>only if you genuinely have this skill</b>. It will be added to your Skills section. If you do not have it, leave it out. Do not claim it.</p>
+    <div class="chips">${gaps.map(gapChip).join('')}</div>`:'<p class="hint">No gaps. Your master resume covers every keyword.</p>'}
+  </div>
+  <div class="card"><h2>Humanising pass</h2>
+    ${log.length?log.slice(0,8).map(l=>`<div class="diff"><s>${esc(l.before)}</s><br><u>${esc(l.after)}</u></div>`).join('')+(log.length>8?`<p class="note">+ ${log.length-8} more small edits</p>`:''):'<p class="hint">Your wording was already clean. No automatic edits were needed.</p>'}
+    <p class="note">Automatic edits only swap filler words (leveraged → used, in order to → to), remove em dashes and trailing full stops. Your facts and numbers are never changed.</p>
+  </div>
+  <div class="card"><h2>Needs your attention</h2>
+    ${flagged.length||noMetric?`<ul class="plain">${flagged.slice(0,8).map(f=>`<li><b>${f[0]}:</b> ${esc(f[1])}</li>`).join('')}${noMetric?`<li><b>${noMetric}</b> selected bullet(s) have no number. If you know a true figure (samples, batches, people, % or time), add it.</li>`:''}</ul>`:'<p class="hint">Nothing flagged.</p>'}
+  </div>
+  <div class="toolbar"><button class="pri" onclick="showTab('resume')">View resume &amp; download →</button><button onclick="showTab('checks')">ATS checklist</button></div>`;
+}
+document.addEventListener('change',e=>{
+  const g=e.target.dataset&&e.target.dataset.gap;if(g===undefined)return;
+  const a=state.extra=state.extra||[];
+  if(e.target.checked){if(!a.includes(g))a.push(g)}else state.extra=a.filter(x=>x!==g);
+  save();run(true);
+});
+
+/* ---------------- preview, tabs ---------------- */
+function showTab(t){
+  $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  $$('.pane').forEach(p=>p.classList.toggle('on',p.id==='pane-'+t));
+  if(t==='resume')setTimeout(fitPreview,30);
+}
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showTab(b.dataset.tab)});
+function fitPreview(){
+  const wrap=$('#pvwrap'),sc=$('#scaler'),pg=$('#page');
+  if(!wrap.offsetParent)return;
+  sc.style.transform='none';sc.style.width='';
+  const w=pg.offsetWidth,avail=wrap.clientWidth-28,s=Math.min(1,avail/w);
+  sc.style.transform=`scale(${s})`;sc.style.width=w+'px';
+  wrap.style.height=Math.ceil(pg.offsetHeight*s+30)+'px';
+}
+window.addEventListener('resize',fitPreview);
+let editT;
+$('#page').addEventListener('input',()=>{clearTimeout(editT);editT=setTimeout(()=>{if(LAST){fitPreview();refreshFromDOM()}},700)});
+function refreshFromDOM(){
+  if(!LAST)return;
+  const text=$('#page').innerText.toLowerCase();
+  LAST.kws.forEach(k=>{k.inTail=kwTest(k.kw,text)});
+  LAST.checks=runChecks();renderChecks();
+  if($('#sPct')){
+    const st=LAST.stat;$('#sPct').textContent=st.pct+'%';$('#sReq').textContent=st.reqGot+'/'+st.reqN;$('#sPages').textContent=st.pages+' pg';
+    const k=$('#kwChips');if(k)k.innerHTML=LAST.kws.map(x=>x.inTail?`<span class="chip ok">✓ ${esc(x.name)}${x.req?'':' <small>(pref)</small>'}</span>`:x.inMaster?`<span class="chip warn">${esc(x.name)}</span>`:'').join('');
+  }
+  $('#fitNote').textContent=LAST.stat.pages+' page(s) · keyword match '+LAST.stat.pct+'%';
+}
+$('#bRecheck').onclick=refreshFromDOM;
+
+/* ---------------- export: print / copy / docx ---------------- */
+$('#bPrint').onclick=()=>{
+  if(!$('#page').children.length){alert('Run the agent first.');return}
+  const root=$('#printRoot');root.innerHTML=`<div class="page">${$('#page').innerHTML}</div>`;
+  applyPageClass(root.firstChild);
+  document.body.classList.add('printing');
+  const done=()=>{document.body.classList.remove('printing');root.innerHTML='';window.removeEventListener('afterprint',done)};
+  window.addEventListener('afterprint',done);
+  setTimeout(()=>window.print(),80);
+};
+$('#bCopy').onclick=async()=>{
+  const t=$('#page').innerText;
+  try{await navigator.clipboard.writeText(t);flash('#bCopy','Copied ✓')}catch(e){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();flash('#bCopy','Copied ✓')}
+};
+function flash(sel,txt){const b=$(sel),o=b.textContent;b.textContent=txt;setTimeout(()=>b.textContent=o,1400)}
+
+const X=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function runX(text,f){f=f||{};
+  return `<w:r><w:rPr>${f.b?'<w:b/>':''}${f.i?'<w:i/>':''}${f.color?`<w:color w:val="${f.color}"/>`:''}<w:sz w:val="${f.sz||20}"/><w:szCs w:val="${f.sz||20}"/></w:rPr><w:t xml:space="preserve">${X(text)}</w:t></w:r>`;
+}
+function walk(node,f,out){
+  node.childNodes.forEach(n=>{
+    if(n.nodeType===3){if(n.textContent)out.push(runX(n.textContent,f))}
+    else if(n.nodeType===1){
+      const g=Object.assign({},f);
+      if(n.tagName==='B'||n.tagName==='STRONG')g.b=1;
+      if(n.tagName==='I'||n.tagName==='EM')g.i=1;
+      if(n.classList&&n.classList.contains('n'))g.b=0;
+      walk(n,g,out);
+    }
+  });
+  return out;
+}
+function paraX(runs,o){o=o||{};
+  let p='';
+  if(o.num)p+='<w:numPr><w:ilvl w:val="0"/><w:numId w:val="1"/></w:numPr>';
+  if(o.border)p+='<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="'+(typeof o.border==='string'?o.border:'000000')+'"/></w:pBdr>';
+  if(o.tab)p+=`<w:tabs><w:tab w:val="right" w:pos="${o.tab}"/></w:tabs>`;
+  p+=`<w:spacing w:before="${o.before||0}" w:after="${o.after||0}" w:line="${o.line||252}" w:lineRule="auto"/>`;
+  if(o.ind)p+=`<w:ind w:left="${o.ind[0]}" w:hanging="${o.ind[1]}"/>`;
+  if(o.jc)p+=`<w:jc w:val="${o.jc}"/>`;
+  return `<w:p><w:pPr>${p}</w:pPr>${runs.join('')}</w:p>`;
+}
+function atsDocx(){
+  const A4=state.opts.paper!=='Letter',W=A4?11906:12240,H=A4?16838:15840,MX=850,MY=794,TW=W-2*MX;
+  const ps=[];
+  for(const el of $('#page').children){
+    const t=el.dataset.t;
+    if(t==='name')ps.push(paraX(walk(el,{b:1,sz:36},[]),{jc:'center',after:30}));
+    else if(t==='contact')ps.push(paraX(walk(el,{sz:19},[]),{jc:'center',after:40}));
+    else if(t==='sec')ps.push(paraX([runX(el.textContent.toUpperCase(),{b:1,sz:21})],{border:1,before:150,after:50}));
+    else if(t==='row'){
+      const l=el.querySelector('.l'),r=el.querySelector('.r');
+      const runs=walk(l,{b:0},[]);runs.push('<w:r><w:tab/></w:r>');runs.push(...walk(r,{},[]));
+      ps.push(paraX(runs,{tab:TW,before:70}));
+    }
+    else if(t==='sub')ps.push(paraX(walk(el,{i:1},[]),{}));
+    else if(t==='p')ps.push(paraX(walk(el,{},[]),{before:20}));
+    else if(el.tagName==='UL')el.querySelectorAll('li').forEach(li=>ps.push(paraX(walk(li,{},[]),{num:1,before:10})));
+  }
+  const ns='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"';
+  const font=FONTNAME[state.opts.tone]||'Calibri';
+  return {
+   '[Content_Types].xml':`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/></Types>`,
+   '_rels/.rels':`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,
+   'word/_rels/document.xml.rels':`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/></Relationships>`,
+   'word/styles.xml':`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles ${ns}><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="${font}" w:hAnsi="${font}" w:cs="${font}" w:eastAsia="${font}"/><w:sz w:val="20"/><w:szCs w:val="20"/><w:lang w:val="en-US"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="0" w:line="252" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style></w:styles>`,
+   'word/numbering.xml':`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:numbering ${ns}><w:abstractNum w:abstractNumId="0"><w:multiLevelType w:val="hybridMultilevel"/><w:lvl w:ilvl="0"><w:start w:val="1"/><w:numFmt w:val="bullet"/><w:lvlText w:val="&#8226;"/><w:lvlJc w:val="left"/><w:pPr><w:ind w:left="340" w:hanging="230"/></w:pPr><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:hint="default"/></w:rPr></w:lvl></w:abstractNum><w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num></w:numbering>`,
+   'word/document.xml':`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${ns}><w:body>${ps.join('')}<w:sectPr><w:pgSz w:w="${W}" w:h="${H}"/><w:pgMar w:top="${MY}" w:right="${MX}" w:bottom="${MY}" w:left="${MX}" w:header="400" w:footer="400" w:gutter="0"/></w:sectPr></w:body></w:document>`
+  };
+}
+/* minimal ZIP (stored) writer */
+const CRCT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+const crc32=b=>{let c=-1;for(let i=0;i<b.length;i++)c=CRCT[(c^b[i])&255]^(c>>>8);return(c^-1)>>>0};
+function zip(files){
+  const enc=new TextEncoder(),parts=[],cen=[];let off=0;
+  const d=new Date(),dt=((d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1))&0xffff,dd=(((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate())&0xffff;
+  for(const [name,txt] of Object.entries(files)){
+    const nb=enc.encode(name),db=typeof txt==='string'?enc.encode(txt):txt,crc=crc32(db);
+    const lh=new DataView(new ArrayBuffer(30));
+    lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x0800,true);lh.setUint16(8,0,true);lh.setUint16(10,dt,true);lh.setUint16(12,dd,true);
+    lh.setUint32(14,crc,true);lh.setUint32(18,db.length,true);lh.setUint32(22,db.length,true);lh.setUint16(26,nb.length,true);lh.setUint16(28,0,true);
+    parts.push(new Uint8Array(lh.buffer),nb,db);
+    const ch=new DataView(new ArrayBuffer(46));
+    ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0x0800,true);ch.setUint16(10,0,true);ch.setUint16(12,dt,true);ch.setUint16(14,dd,true);
+    ch.setUint32(16,crc,true);ch.setUint32(20,db.length,true);ch.setUint32(24,db.length,true);ch.setUint16(28,nb.length,true);ch.setUint32(42,off,true);
+    cen.push(new Uint8Array(ch.buffer),nb);
+    off+=30+nb.length+db.length;
+  }
+  const cs=cen.reduce((a,b)=>a+b.length,0),n=Object.keys(files).length;
+  const e=new DataView(new ArrayBuffer(22));
+  e.setUint32(0,0x06054b50,true);e.setUint16(8,n,true);e.setUint16(10,n,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
+  return new Blob([...parts,...cen,new Uint8Array(e.buffer)],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+}
+function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+const slug=s=>String(s||'').trim().replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'');
+$('#bDocx').onclick=()=>{
+  if(!$('#page').children.length){alert('Run the agent first.');return}
+  download(zip(domToDocx()),`${slug(state.profile.name)||'Resume'}_${slug(state.job.company)||'Tailored'}_Resume.docx`);
+};
+
+/* ---------------- master resume save / load ---------------- */
+$('#bExport').onclick=()=>{const o=JSON.parse(JSON.stringify(state));o.job={company:'',title:'',jd:''};download(new Blob([JSON.stringify(o,null,2)],{type:'application/json'}),`${slug(state.profile.name)||'my'}_master_resume.json`)};
+$('#bImport').onclick=()=>$('#fImport').click();
+$('#fImport').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);state=Object.assign(blank(),o,{job:Object.assign(blank().job,state.job)});fillForm();save();alert('Master resume loaded.')}catch(x){alert('That file could not be read.')}};
+  r.readAsText(f);e.target.value='';
+};
+$('#bReset').onclick=()=>{if(!confirm('Clear all fields on this page?'))return;state=blank();fillForm();save();LAST=null;$('#page').innerHTML='';$('#pane-report').innerHTML='<div class="card empty">Fill the left side and press <b>Run agent</b>.</div>';$('#pane-checks').innerHTML='<div class="card empty">Run the agent to see the ATS checklist.</div>'};
+$('#bRun').onclick=()=>run(false);
+
+/* ---------------- samples ---------------- */
+const SAMPLE_PHARMA={profile:{name:'Riya Patil',email:'riya.patil@example.com',phone:'+91 98765 43210',location:'Pune, Maharashtra',linkedin:'linkedin.com/in/riyapatil',github:'',headline:'B.Pharm Graduate | Quality Control & Analytical Testing'},summary:'',
+ education:[{school:'Sample College of Pharmacy, Maharashtra',degree:'B.Pharm',date:'Aug 2022 – Jun 2026',gpa:'8.6/10',details:'Relevant coursework: Pharmaceutical Analysis, Quality Assurance, Pharmaceutics, Pharmacology'}],
+ experience:[{role:'Quality Control Intern',org:'Sunrise Pharma Pvt. Ltd.',date:'May 2025 – Jun 2025',location:'Pune',bullets:'Assisted in HPLC assay of paracetamol tablets under a senior analyst\nPrepared mobile phase and standard solutions as per SOP\nRecorded analytical data in logbooks following good documentation practices\nHelped with stability sample pulls for 3 batches\nResponsible for cleaning and calibration of analytical balance and pH meter'},
+  {role:'Trainee',org:'District Hospital Pharmacy',date:'Jan 2025 – Feb 2025',location:'Sangli',bullets:'Dispensed prescriptions and counselled patients under pharmacist supervision\nManaged inventory checks of 200+ medicines and flagged near-expiry stock'}],
+ projects:[{name:'UV Method Development and Validation for Metformin HCl',tech:'UV-Visible spectroscopy, ICH Q2(R1)',date:'Jan 2026 – Apr 2026',link:'',bullets:'Developed a UV method for metformin estimation at 233 nm, linear from 2 to 12 µg/mL (r2 = 0.999)\nValidated accuracy, precision, LOD and LOQ as per ICH guidelines\nWrote a 40-page report and presented results to a panel of 3 faculty members'},
+  {name:'Formulation and Evaluation of Herbal Gel',tech:'Formulation, viscosity, pH, spreadability',date:'Aug 2025 – Nov 2025',link:'',bullets:'Prepared 5 batches of an herbal anti-inflammatory gel and optimised carbopol concentration\nEvaluated pH, viscosity, spreadability and stability over 4 weeks'},
+  {name:'Molecular Docking of Flavonoids against COX-2',tech:'AutoDock, ChemDraw, Discovery Studio',date:'Jul 2025 – Sep 2025',link:'',bullets:'Docked 20 flavonoids against COX-2 and ranked them by binding energy\nPrepared ligands in ChemDraw and visualised interactions'}],
+ skills:'Analytical: HPLC (4/5), UV-Visible spectroscopy (4/5), dissolution testing (3/5), titrations (4/5)\nQuality & Compliance: GMP, GLP, SOPs, ICH guidelines, good documentation practices\nSoftware: MS Excel, MS Word, ChemDraw, AutoDock\nSoft skills: communication, teamwork',
+ certs:'GMP and GLP awareness workshop, 2025\nPharmacovigilance basics, online course, 2025',
+ achievements:'Poster presentation at a state-level pharmacy conference, 2025\nClass representative, 2024–25',
+ job:{company:'Sunrise Formulations Pvt. Ltd.',title:'Quality Control Analyst Trainee',rkey:'qc|Quality Control Analyst',autoJD:false,jd:`Quality Control Analyst Trainee
+About the role: We are hiring fresh B.Pharm / M.Sc graduates to join our Quality Control laboratory.
+Responsibilities:
+- Perform routine analysis of raw materials, in-process and finished products using HPLC, UV-Visible spectrophotometer and dissolution apparatus.
+- Prepare standard and sample solutions and follow SOPs.
+- Maintain analytical records and documentation as per GLP and GMP.
+- Support stability studies and calibration of laboratory instruments.
+- Assist in method validation and analytical method transfer as per ICH guidelines.
+Requirements:
+- B.Pharm or M.Pharm in Pharmaceutical Analysis or Quality Assurance.
+- Hands-on knowledge of HPLC and UV spectroscopy.
+- Understanding of GMP, GLP and data integrity (ALCOA).
+- Good communication skills, attention to detail and teamwork.
+Preferred:
+- Exposure to Empower software or LIMS.
+- Internship in a pharmaceutical QC lab.
+- Knowledge of Karl Fischer titration.`},
+ opts:{level:'new_grad',pages:'auto',tone:'modern',paper:'A4'},extra:[]};
+const SAMPLE_PV={profile:{name:'Neha Kulkarni',email:'neha.kulkarni@example.com',phone:'+91 99887 76655',location:'Kolhapur, Maharashtra',linkedin:'linkedin.com/in/nehakulkarni',github:'',headline:'B.Pharm Graduate | Pharmacovigilance & Drug Safety'},summary:'',
+ education:[{school:'Sample College of Pharmacy, Maharashtra',degree:'B.Pharm',date:'Aug 2022 – Jun 2026',gpa:'8.9/10',details:'Relevant coursework: Pharmacology, Clinical Pharmacy, Hospital Pharmacy, Pharmaceutical Jurisprudence'}],
+ experience:[{role:'Pharmacovigilance Intern',org:'Sample Hospital ADR Monitoring Centre',date:'Jan 2026 – Mar 2026',location:'Kolhapur',bullets:'Screened 120 suspected ADR forms for completeness and seriousness\nAssessed causality using the WHO-UMC and Naranjo scales under supervision\nCoded adverse events with MedDRA terms and entered cases in VigiFlow\nResponsible for maintaining the ADR report register'}],
+ projects:[{name:'Prospective Study of Adverse Drug Reactions in a Tertiary Care Hospital',tech:'ADR reporting, causality assessment, SPSS',date:'Aug 2025 – Dec 2025',link:'',bullets:'Monitored 150 patients in the medicine ward for 4 months and identified 38 suspected ADRs\nClassified reactions by severity and preventability and analysed data in SPSS\nPresented findings at a college research day'},
+  {name:'Drug Utilization Study of Antibiotics in a Hospital OPD',tech:'Drug utilization, WHO indicators, Excel',date:'Mar 2025 – Jun 2025',link:'',bullets:'Reviewed 300 prescriptions using WHO prescribing indicators\nPrepared summary tables and charts in Excel'},
+  {name:'Literature Review on Signal Detection',tech:'PubMed, literature review',date:'Jan 2025 – Feb 2025',link:'',bullets:'Screened 60 articles from PubMed on signal detection methods\nWrote a 15-page review with references'}],
+ skills:'Pharmacovigilance: ADR reporting, causality assessment, MedDRA, case narratives\nTools: SPSS, MS Excel, MS Word, PubMed\nSoft skills: communication, attention to detail, teamwork',
+ certs:'Pharmacovigilance basics, online course, 2025\nGood Clinical Practice (ICH-GCP) online certificate, 2025',
+ reg:'Qualified GPAT 2026',
+ achievements:'Poster presentation on ADR monitoring, state-level conference, 2025\nPharmacovigilance week volunteer, 2025',
+ job:{company:'',title:'Pharmacovigilance Associate',rkey:'pv|Pharmacovigilance Associate',autoJD:false,jd:''},
+ opts:{level:'new_grad',pages:'auto',tone:'modern',paper:'A4'},extra:[]};
+const SAMPLE_MR={profile:{name:'Rohan Jadhav',email:'rohan.jadhav@example.com',phone:'+91 90909 12121',location:'Sangli, Maharashtra',linkedin:'',github:'',headline:'B.Pharm Graduate | Pharma Sales & Marketing'},summary:'',
+ education:[{school:'Sample College of Pharmacy, Maharashtra',degree:'B.Pharm',date:'Aug 2022 – Jun 2026',gpa:'7.8/10',details:'Relevant coursework: Pharmacology, Pharmaceutics, Pharmacy Management and Marketing'}],
+ experience:[{role:'Field Training Intern (Medical Representative)',org:'Sample Pharma Marketing Pvt. Ltd.',date:'Apr 2025 – May 2025',location:'Sangli',bullets:'Visited 12 to 15 chemists and 8 doctors daily with a senior representative\nPrepared detailing aids for 3 products and practised product detailing\nHelped with tour plans, call reports and stockist order follow-up\nAssisted in a CME event attended by 40 doctors'},
+  {role:'Part-time Pharmacy Assistant',org:'Sample Medical Store',date:'Jun 2024 – Dec 2024',location:'Sangli',bullets:'Handled customer queries and billing for 60+ customers per day\nHelped maintain stock and expiry records'}],
+ projects:[{name:'Market Survey of Antidiabetic Brands in Sangli District',tech:'Market research, Excel',date:'Oct 2025 – Dec 2025',link:'',bullets:'Surveyed 40 chemists on prescription and sales trends of antidiabetic brands\nAnalysed responses in Excel and presented a brand comparison to faculty'},
+  {name:'Health Awareness Camp',tech:'Event management, patient counselling',date:'Feb 2025',link:'',bullets:'Organised a diabetes and BP screening camp attended by 200+ people\nLed a team of 10 student volunteers'}],
+ skills:'Sales & Marketing: product knowledge, doctor detailing, territory management, market research\nTools: MS Excel, MS Word, PowerPoint\nLanguages: English, Hindi, Marathi\nSoft skills: communication, negotiation, time management',
+ certs:'Pharma sales and marketing workshop, 2025',reg:'',
+ achievements:'Best Student Marketer, college business fest, 2025\nNSS volunteer, 2023–25',
+ job:{company:'',title:'Medical Representative',rkey:'sales|Medical Representative',autoJD:false,jd:''},
+ opts:{level:'new_grad',pages:'auto',tone:'modern',paper:'A4'},extra:[]};
+function loadSample(s){
+  const o=JSON.parse(JSON.stringify(s));
+  o.job=Object.assign(blank().job,o.job);
+  if(!(o.job.jd||'').trim()){const i=o.job.rkey.indexOf('|'),dk=o.job.rkey.slice(0,i),rn=o.job.rkey.slice(i+1),r=ROLEIDX.find(x=>x.dk===dk&&x.n===rn);o.job.jd=templateJD(dk,rn,r?r.ex:'');o.job.autoJD=true}
+  o.opts=Object.assign(blank().opts,o.opts,{tpl:state.opts.tpl,accent:state.opts.accent});o.photo=state.photo;
+  state=Object.assign(blank(),o);fillForm();save();run(false);
+}
+$('#bSample').onclick=()=>loadSample(SAMPLE_PHARMA);
+$('#bSample2').onclick=()=>loadSample(SAMPLE_PV);
+$('#bSample3').onclick=()=>loadSample(SAMPLE_MR);
+
+
+/* ---------- role picker ---------- */
+function renderRoleSelect(filter){
+  const sel=$('#roleSel');if(!sel)return;
+  const q=(filter||'').toLowerCase().trim();
+  let h='<option value="">Choose a pharmacy job role…</option>',n=0;
+  Object.entries(DOM).forEach(([dk,d])=>{
+    const rs=ROLEIDX.filter(r=>r.dk===dk&&(!q||(r.n+' '+d.n+' '+r.ex).toLowerCase().includes(q)));
+    if(rs.length){n+=rs.length;h+=`<optgroup label="${esc(d.n)}">${rs.map(r=>`<option value="${dk}|${esc(r.n)}">${esc(r.n)}</option>`).join('')}</optgroup>`}
+  });
+  h+='<option value="custom|Other role">Other role (I will paste the job description)</option>';
+  sel.innerHTML=h;sel.value=state.job.rkey||'';
+  const c=$('#roleCount');if(c)c.textContent=q?`${n} role(s) match`:`${ROLEIDX.length} pharmacy roles in ${Object.keys(DOM).length} career areas`;
+}
+function updJDNote(){const n=$('#jdNote');if(n)n.textContent=state.job.autoJD?'(typical JD loaded: paste the real one from LinkedIn for best accuracy)':''}
+function setTpl(dk,rn){const r=ROLEIDX.find(x=>x.dk===dk&&x.n===rn);state.job.jd=templateJD(dk,rn,r?r.ex:'');state.job.autoJD=true;$('[data-path="job.jd"]').value=state.job.jd}
+function onRole(v){
+  state.job.rkey=v;
+  if(v){
+    const i=v.indexOf('|'),dk=v.slice(0,i),rn=v.slice(i+1),t=$('[data-path="job.title"]');
+    if(!state.job.title||state.job.title===state.job.lastRole){state.job.title=rn;t.value=rn}
+    state.job.lastRole=rn;
+    if(dk!=='custom'&&(!(state.job.jd||'').trim()||state.job.autoJD))setTpl(dk,rn);
+  }
+  updJDNote();save();
+}
+$('#roleSel').addEventListener('change',e=>onRole(e.target.value));
+$('#roleSearch').addEventListener('input',e=>renderRoleSelect(e.target.value));
+$('#bTpl').onclick=()=>{
+  const v=state.job.rkey||'';
+  if(!v||v.startsWith('custom')){alert('Choose a role from the list first.');return}
+  if((state.job.jd||'').trim()&&!state.job.autoJD&&!confirm('Replace the job description you pasted with the typical one for this role?'))return;
+  const i=v.indexOf('|');setTpl(v.slice(0,i),v.slice(i+1));updJDNote();save();
+};
+
+/* ================= TEMPLATES ================= */
+const TPL={
+ ats:{n:'ATS Classic',ats:1},
+ sideL:{n:'Grey Sidebar + Photo',side:'L',w:31,sbg:'#e9ecf0',sfg:'#1c2430',photo:'side',lv:'dots'},
+ navy:{n:'Navy Sidebar + Photo',side:'L',w:32,sbg:'ac',sfg:'#ffffff',photo:'side',lv:'bars'},
+ banner:{n:'Banner + Right Panel',banner:1,side:'R',w:31,sbg:'#eff1f5',sfg:'#1c2430',photo:'none',lv:'bars'},
+ clean:{n:'Clean Single Column + Photo',single:1,photo:'head',lv:'text'},
+ center:{n:'Centered Headings + Photo',single:1,photo:'headL',center:1,lv:'text'},
+ nameblue:{n:'Big Name + Right Panel',nameTop:1,side:'R',w:29,sbg:'#f1f4f9',sfg:'#1c2430',photo:'none',lv:'bars'}
+};
+function thumb(id){
+  const g='#b9c2d0',d='#6b7a90',ac='#1f3a6e';
+  const ln=(x,y,w,c)=>`<rect x="${x}" y="${y}" width="${w}" height="2.2" rx="1" fill="${c||g}"/>`;
+  const blk=(x,y,w,n,c)=>Array.from({length:n},(_,i)=>ln(x,y+i*5,w,c)).join('');
+  let s='<svg viewBox="0 0 60 84" width="60" height="84" aria-hidden="true"><rect x=".5" y=".5" width="59" height="83" fill="#fff" stroke="#c9d0dc"/>';
+  if(id==='ats')s+=ln(16,7,28,d)+ln(10,12,40)+ln(8,20,44,d)+blk(8,25,44,3)+ln(8,43,44,d)+blk(8,48,44,4)+ln(8,70,44,d)+ln(8,75,30);
+  if(id==='sideL')s+='<rect x=".5" y=".5" width="19" height="83" fill="#e4e7ec"/><rect x="4" y="5" width="12" height="12" rx="1.5" fill="#9aa4b5"/>'+blk(4,22,12,7)+ln(24,7,28,ac)+blk(24,16,32,4)+ln(24,38,20,ac)+blk(24,43,32,5)+ln(24,68,20,ac)+ln(24,73,30);
+  if(id==='navy')s+=`<rect x=".5" y=".5" width="19" height="83" fill="${ac}"/><rect x="4" y="5" width="12" height="12" rx="6" fill="#8fa3c8"/>`+blk(4,22,12,7,'#8fa3c8')+ln(24,7,28,ac)+blk(24,16,32,4)+ln(24,38,20,ac)+blk(24,43,32,5)+ln(24,68,20,ac)+ln(24,73,30);
+  if(id==='banner')s+=`<rect x=".5" y=".5" width="59" height="15" fill="#3b4a63"/>`+ln(5,5,24,'#fff')+ln(5,10,16,'#cfd6e4')+'<rect x="42" y="15.5" width="17.5" height="68" fill="#eceef3"/>'+blk(45,21,11,6)+ln(5,21,22,ac)+blk(5,26,33,4)+ln(5,47,22,ac)+blk(5,52,33,5);
+  if(id==='clean')s+=ln(6,8,26,ac)+ln(6,13,16,d)+ln(6,18,24)+'<rect x="44" y="5" width="10" height="12" rx="1.5" fill="#9aa4b5"/>'+ln(6,26,48,ac)+blk(6,31,48,3)+ln(6,48,48,ac)+blk(6,53,48,4);
+  if(id==='center')s+='<rect x="6" y="5" width="10" height="12" rx="1.5" fill="#9aa4b5"/>'+ln(22,7,28,ac)+ln(24,12,24,d)+ln(20,17,32)+ln(18,26,24,ac)+blk(6,31,48,3)+ln(18,48,24,ac)+blk(6,53,48,4);
+  if(id==='nameblue')s+=ln(6,7,28,ac)+ln(6,13,18,d)+ln(40,7,14)+ln(40,12,14)+'<rect x="42" y="22" width="17.5" height="61.5" fill="#eef1f7"/>'+blk(45,28,11,6)+ln(6,24,20,ac)+blk(6,29,32,4)+ln(6,50,20,ac)+blk(6,55,32,4);
+  return s+'</svg>';
+}
+function renderTplGrid(){
+  const g=$('#tplGrid');if(!g)return;const cur=state.opts.tpl||'ats';
+  g.innerHTML=Object.entries(TPL).map(([id,T])=>`<button type="button" class="tplb${id===cur?' on':''}" data-tpl="${id}">${thumb(id)}<span>${esc(T.n)}</span>${T.ats?'<em>ATS-safe</em>':'<em class="d">Designed</em>'}</button>`).join('');
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-tpl]');if(!b)return;
+  state.opts.tpl=b.dataset.tpl;save();renderTplGrid();if(LAST)run(true);
+});
+function applyPageClass(el){
+  const id=state.opts.tpl||'ats',T=TPL[id]||TPL.ats,ac=state.opts.accent||'#1f3a6e';
+  el.className='page'+(T.ats?'':' designed tpl-'+id);
+  el.style.setProperty('--ac',ac);
+  el.style.setProperty('--sbg',T.sbg==='ac'?ac:(T.sbg||'#fff'));
+  el.style.setProperty('--sfg',T.sfg||'#1c2430');
+  el.style.setProperty('--sw',(T.w||30)+'%');
+  el.style.fontFamily=FONT[state.opts.tone]||FONT.modern;
+}
+
+/* ================= HTML BUILDERS ================= */
+function secParts(m){
+  const row=(l,r)=>`<div data-t="row"><span class="l">${l}</span><span class="r">${esc(r||'')}</span></div>`;
+  const bul=x=>x.sel.length?`<ul>${x.sel.map(b=>`<li data-t="li">${esc(b.text)}</li>`).join('')}</ul>`:'';
+  const sec=t=>`<div data-t="sec">${t}</div>`;
+  const lvHTML=(lv,st)=>st==='bars'?`<span class="lv bar"><i style="width:${lv*20}%"></i></span>`:`<span class="lv">${'●'.repeat(lv)}${'○'.repeat(5-lv)}</span>`;
+  return {
+   sec,
+   summary:t=>m.summaryOn?sec(t||'Summary')+`<div data-t="p">${esc(m.summary)}</div>`:'',
+   edu:()=>m.edu.length?sec('Education')+m.edu.map(e=>row(`<b>${esc(e.school||'')}</b>`,e.date)+
+       `<div data-t="sub">${esc([e.degree,e.gpa?('CGPA/Score: '+e.gpa.replace(/^(cgpa|score)[:\s]*/i,'')):''].filter(Boolean).join(' | '))}</div>`+
+       (e.details?`<div data-t="p">${esc(e.details)}</div>`:'')).join(''):'',
+   exps:()=>m.exps.length?sec('Experience')+m.exps.map(x=>row(`<b>${esc([x.e.role,x.e.org].filter(Boolean).join(', '))}</b>`,x.e.date)+
+       (x.e.location?`<div data-t="sub">${esc(x.e.location)}</div>`:'')+bul(x)).join(''):'',
+   projs:()=>m.projs.length?sec('Projects')+m.projs.map(x=>row(`<b>${esc(x.e.name||'')}</b>`+(x.e.tech?`<span class="n"> | ${esc(x.e.tech)}</span>`:''),x.e.date)+
+       (x.e.link?`<div data-t="sub">${esc(x.e.link)}</div>`:'')+bul(x)).join(''):'',
+   skills:()=>m.skills.length?sec('Skills')+m.skills.map(g=>`<div data-t="p"><b>${esc(g.cat)}:</b> ${esc(g.items.join(', '))}</div>`).join(''):'',
+   skillsSide:st=>m.skills.map(g=>sec(esc(g.cat))+g.items.map(i=>{const lv=(g.lvl||{})[i.toLowerCase()]||0;return `<div data-t="skill" data-lv="${lv||''}"><span class="sn">${esc(i)}</span>${lv?lvHTML(lv,st):''}</div>`}).join('')).join(''),
+   reg:()=>m.reg.length?sec('Registration &amp; Exams')+`<ul>${m.reg.map(x=>`<li data-t="li">${esc(x)}</li>`).join('')}</ul>`:'',
+   certs:()=>m.certs.length?sec('Certifications')+`<ul>${m.certs.map(x=>`<li data-t="li">${esc(x)}</li>`).join('')}</ul>`:'',
+   ach:()=>m.ach.length?sec('Achievements &amp; Activities')+`<ul>${m.ach.map(x=>`<li data-t="li">${esc(x)}</li>`).join('')}</ul>`:''
+  };
+}
+function modelHTML(m){
+  const id=state.opts.tpl||'ats';
+  return (TPL[id]&&!TPL[id].ats)?designHTML(m,id):atsHTML(m);
+}
+function atsHTML(m){
+  const p=m.profile,P=secParts(m);let h='';
+  h+=`<div data-t="name">${esc(p.name||'Your Name')}</div>`;
+  const c=[p.location,p.email,p.phone,p.linkedin,p.github].map(x=>(x||'').trim()).filter(Boolean);
+  h+=`<div data-t="contact">${esc(c.join(' | '))}</div>`;
+  h+=P.summary('Summary');
+  m.order.forEach(k=>{h+=P[k]()});
+  return h;
+}
+function designHTML(m,id){
+  const T=TPL[id],p=m.profile,P=secParts(m);
+  const lines2=[p.location,p.email,p.phone,p.linkedin,p.github].map(x=>(x||'').trim()).filter(Boolean);
+  const nameH=`<div data-t="name">${esc(p.name||'Your Name')}</div>`+((p.headline||'').trim()?`<div data-t="head">${esc(p.headline.trim())}</div>`:'');
+  const photo=(state.photo&&T.photo!=='none')?`<img data-t="photo" alt="Photo" src="${state.photo}">`:'';
+  const cl=lines2.map(x=>`<div data-t="cl">${esc(x)}</div>`).join('');
+  const mainKeys=m.order.filter(k=>['edu','exps','projs'].includes(k));
+  const mainSecs=P.summary('Profile')+mainKeys.map(k=>P[k]()).join('');
+  const sideSecs=(withContact)=>(withContact?P.sec(T.banner?'Contact Info':'Contact')+cl:'')+P.skillsSide(T.lv)+P.reg()+P.certs()+P.ach();
+  if(T.single){
+    const all=P.summary('Summary')+m.order.map(k=>P[k]()).join('');
+    if(T.center)return `<div class="hdr"><div class="c p">${photo}</div><div class="c ctr">${nameH}<div data-t="contact">${esc(lines2.join(' | '))}</div></div></div><div class="main1">${all}</div>`;
+    return `<div class="hdr"><div class="c">${nameH}<div data-t="contact">${esc(lines2.join(' | '))}</div></div><div class="c p">${photo}</div></div><div class="main1">${all}</div>`;
+  }
+  if(T.banner)return `<div class="hdr"><div class="c">${nameH}</div></div><div class="cols"><div class="main">${mainSecs}</div><div class="side">${sideSecs(true)}</div></div>`;
+  if(T.nameTop)return `<div class="hdr"><div class="c">${nameH}</div><div class="c r">${cl}</div></div><div class="cols"><div class="main">${mainSecs}</div><div class="side">${sideSecs(false)}</div></div>`;
+  // left sidebar templates
+  return `<div class="cols"><div class="side">${photo}${sideSecs(true)}</div><div class="main">${nameH}${mainSecs}</div></div>`;
+}
+
+/* ================= DOCX for designed templates ================= */
+const hexc=c=>String(c||'').replace('#','').toUpperCase();
+function photoXml(c){
+  const e=c.photoSz||1000000;
+  return `<w:p><w:pPr><w:spacing w:before="0" w:after="120"/>${c.photoJc?`<w:jc w:val="${c.photoJc}"/>`:''}</w:pPr><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${e}" cy="${e}"/><wp:docPr id="1" name="Photo"/><wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="0" name="photo.jpg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rId3"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${e}" cy="${e}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`;
+}
+function blkXml(el,c){
+  const t=el.dataset.t,fg=c.fg,jc=c.jc||'';
+  if(t==='photo')return photoXml(c);
+  if(t==='name')return paraX(walk(el,{b:1,sz:c.nameSz||40,color:c.nameColor||fg},[]),{jc,after:20,line:240});
+  if(t==='head')return paraX(walk(el,{sz:21,color:c.headColor||fg},[]),{jc,after:90});
+  if(t==='cl')return paraX(walk(el,{sz:18,color:fg},[]),{jc,after:30});
+  if(t==='contact')return paraX(walk(el,{sz:18,color:fg},[]),{jc:c.contactJc||jc,after:60});
+  if(t==='sec')return paraX([runX(el.textContent.toUpperCase(),{b:1,sz:20,color:c.secColor})],{border:c.secBorder,before:150,after:60,jc:c.secJc});
+  if(t==='row'){
+    const l=el.querySelector('.l'),r=el.querySelector('.r');
+    const runs=walk(l,{b:0,color:fg},[]);runs.push('<w:r><w:tab/></w:r>');runs.push(...walk(r,{color:fg},[]));
+    return paraX(runs,{tab:c.tw,before:70});
+  }
+  if(t==='sub')return paraX(walk(el,{i:1,color:fg},[]),{});
+  if(t==='p')return paraX(walk(el,{color:fg},[]),{before:20});
+  if(t==='skill'){
+    const n=el.querySelector('.sn').textContent,lv=+el.dataset.lv||0,r=[runX(n,{sz:19,color:fg})];
+    if(lv){r.push('<w:r><w:tab/></w:r>');r.push(runX('●'.repeat(lv)+'○'.repeat(5-lv),{sz:15,color:c.dotColor||fg}))}
+    return paraX(r,{tab:lv?c.tw:0,before:20});
+  }
+  if(el.tagName==='UL')return [...el.querySelectorAll('li')].map(li=>c.noNum?
+    paraX([runX('• ',{sz:19,color:fg}),...walk(li,{color:fg,sz:19},[])],{ind:[220,220],before:10}):
+    paraX(walk(li,{color:fg},[]),{num:1,before:10})).join('');
+  return '';
+}
+const cellBlocks=(box,c)=>box?[...box.children].map(el=>blkXml(el,c)).join(''):'';
+function cellX(w,fill,pad,inner,span){
+  return `<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${span?`<w:gridSpan w:val="${span}"/>`:''}${fill?`<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>`:''}<w:tcMar><w:top w:w="${pad[0]}" w:type="dxa"/><w:left w:w="${pad[3]}" w:type="dxa"/><w:bottom w:w="${pad[2]}" w:type="dxa"/><w:right w:w="${pad[1]}" w:type="dxa"/></w:tcMar></w:tcPr>${inner||'<w:p/>'}</w:tc>`;
+}
+function rowX(cells,h){return `<w:tr><w:trPr>${h?`<w:trHeight w:val="${h}" w:hRule="atLeast"/>`:''}</w:trPr>${cells}</w:tr>`}
+function tblX(widths,rows,tw){return `<w:tbl><w:tblPr><w:tblW w:w="${tw}" w:type="dxa"/><w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid>${widths.map(w=>`<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${rows}</w:tbl>`}
+function designedDocParts(){
+  const T=TPL[state.opts.tpl],A4=state.opts.paper!=='Letter',W=A4?11906:12240,H=A4?16838:15840;
+  const ac=hexc(state.opts.accent||'#1f3a6e'),dark='1C2430';
+  const sbg=T.sbg==='ac'?ac:hexc(T.sbg||''),sfg=hexc(T.sfg||dark);
+  const page=$('#page'),q=s=>page.querySelector(':scope>'+s);
+  const hdr=q('.hdr'),cols=q('.cols'),m1=q('.main1');
+  const photoOn=!!page.querySelector('[data-t=photo]')&&!!state.photo;
+  const MX=T.single?850:0,MY=T.single?794:0,TW=W-2*MX;
+  const mainCtx=(tw,extra)=>Object.assign({fg:dark,secColor:ac,secBorder:ac,tw,nameColor:ac,nameSz:44,headColor:'555555'},extra||{});
+  let body='',rowH=H-300;
+  const kids=(box,sel)=>box?box.querySelector(':scope>'+sel):null;
+  if(T.single){
+    const cs=[...hdr.querySelectorAll(':scope>.c')],wl=T.center?[0.2,0.8]:[0.78,0.22];
+    const ws=wl.map(x=>Math.round(TW*x));
+    const cells=cs.map((c,i)=>{
+      const isPhoto=c.classList.contains('p');
+      const ctx=mainCtx(ws[i],{photoJc:T.center?'left':'right',photoSz:1000000,jc:T.center&&!isPhoto?'center':'',contactJc:T.center?'center':'',nameSz:T.center?44:44});
+      return cellX(ws[i],'',[0,0,0,0],cellBlocks(c,ctx));
+    }).join('');
+    body+=tblX(ws,rowX(cells),TW);
+    const sctx=mainCtx(TW,{secJc:T.center?'center':''});
+    body+=cellBlocks(m1,sctx);
+  }else{
+    if(hdr){
+      const cs=[...hdr.querySelectorAll(':scope>.c')];
+      if(T.banner){
+        const ctx=mainCtx(W-720,{fg:'FFFFFF',nameColor:'FFFFFF',headColor:'E6EBF5'});
+        body+=tblX([W],rowX(cellX(W,ac,[240,360,240,360],cellBlocks(cs[0],ctx))),W);
+        rowH=H-1700;
+      }else{
+        const ws=[Math.round(W*0.68),W-Math.round(W*0.68)];
+        const cells=cs.map((c,i)=>cellX(ws[i],'',[360,360,60,i?200:340],cellBlocks(c,mainCtx(ws[i]-700,{nameSz:i?0:52,jc:i?'right':''})))).join('');
+        body+=tblX(ws,rowX(cells),W);rowH=H-1500;
+      }
+    }
+    const sw=Math.round(W*T.w/100),mw=W-sw,dk=sfg==='FFFFFF';
+    const sideCtx={fg:sfg,secColor:sfg,secBorder:dk?'8FA3C8':'999999',tw:sw-560,noNum:true,photoJc:'center',photoSz:1080000,dotColor:sfg};
+    const mainC=mainCtx(mw-700);
+    const side=cellX(sw,sbg,[320,260,300,300],cellBlocks(kids(cols,'.side')?cols.querySelector(':scope>.side'):null,sideCtx));
+    const main=cellX(mw,'',[360,340,300,340],cellBlocks(cols.querySelector(':scope>.main'),mainC));
+    const cellsB=T.side==='L'?side+main:main+side;
+    body+=tblX(T.side==='L'?[sw,mw]:[mw,sw],rowX(cellsB,rowH),W);
+  }
+  body+='<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/></w:pPr></w:p>';
+  const ns='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"';
+  const doc=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document ${ns}><w:body>${body}<w:sectPr><w:pgSz w:w="${W}" w:h="${H}"/><w:pgMar w:top="${MY}" w:right="${MX}" w:bottom="${MY}" w:left="${MX}" w:header="0" w:footer="0" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  return {doc,photoOn};
+}
+function dataUrlBytes(u){const b=atob(u.split(',')[1]||'');const a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}
+
+/* ================= photo upload ================= */
+function updPhoto(){const n=$('#photoNote');if(n)n.textContent=state.photo?'Photo added (cropped to a square). It appears in designed templates that have a photo spot.':'No photo added.'}
+$('#fPhoto').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const img=new Image(),url=URL.createObjectURL(f);
+  img.onload=()=>{
+    const c=document.createElement('canvas'),sz=360;c.width=c.height=sz;
+    const m=Math.min(img.width,img.height);
+    c.getContext('2d').drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,sz,sz);
+    state.photo=c.toDataURL('image/jpeg',.85);URL.revokeObjectURL(url);
+    save();updPhoto();if(LAST)run(true);
+  };
+  img.onerror=()=>{alert('That image could not be read.')};
+  img.src=url;e.target.value='';
+});
+$('#bPhotoX').onclick=()=>{state.photo='';save();updPhoto();if(LAST)run(true)};
+
+function domToDocx(){
+  const T=TPL[state.opts.tpl||'ats'];
+  const f=atsDocx();
+  if(T.ats)return f;
+  const d=designedDocParts();
+  f['word/document.xml']=d.doc;
+  if(d.photoOn){
+    f['[Content_Types].xml']=f['[Content_Types].xml'].replace('<Default Extension="xml"','<Default Extension="jpg" ContentType="image/jpeg"/><Default Extension="xml"');
+    f['word/_rels/document.xml.rels']=f['word/_rels/document.xml.rels'].replace('</Relationships>','<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/photo.jpg"/></Relationships>');
+    f['word/media/photo.jpg']=dataUrlBytes(state.photo);
+  }
+  return f;
+}
+fillForm();applyPaper();
+$$('[data-path^="opts."]').forEach(el=>el.addEventListener('change',()=>{applyPaper();if(LAST)run(true)}));
+</script>
+</body>
+</html>
